@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}
+Upload Resume
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow border-0">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h3 class="mb-0">
+                        {% if resume %}
+                            Replace Resume
+                        {% else %}
+                            Upload Resume
+                        {% endif %}
+                    </h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-4">
+
+                        <h5 class="text-primary">
+                            Job Information
+                        </h5>
+
+                        <hr>
+
+                        <p class="mb-2">
+                            <strong>Job Title:</strong>
+                            {{ application.job.title }}
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Company:</strong>
+                            {{ application.job.company.name }}
+                        </p>
+
+                        <p class="mb-0">
+                            <strong>Current Status:</strong>
+
+                            <span class="badge bg-info">
+                                {{ application.get_status_display }}
+                            </span>
+                        </p>
+
+                    </div>
+
+                    {% if resume %}
+
+                    <div class="alert alert-success">
+
+                        <h6 class="mb-2">
+                            Resume Already Uploaded
+                        </h6>
+
+                        <p class="mb-2">
+
+                            <strong>Current File:</strong>
+
+                            <a
+                                href="{{ resume.file.url }}"
+                                target="_blank">
+
+                                View Resume
+
+                            </a>
+
+                        </p>
+
+                        <small class="text-muted">
+
+                            Uploading another file will replace the existing resume.
+
+                        </small>
+
+                    </div>
+
+                    {% endif %}
+
+                    <form
+                        method="POST"
+                        enctype="multipart/form-data">
+
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-bold">
+
+                                Select Resume
+
+                            </label>
+
+                            {{ form.file }}
+
+                            {% if form.file.errors %}
+
+                                <div class="text-danger mt-2">
+
+                                    {{ form.file.errors }}
+
+                                </div>
+
+                            {% endif %}
+
+                            <div class="form-text mt-2">
+
+                                Supported formats:
+                                <strong>PDF, DOC, DOCX</strong>
+
+                                <br>
+
+                                Maximum file size:
+                                <strong>5 MB</strong>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+
+                            <a
+                                href="{% url 'my-applications' %}"
+                                class="btn btn-outline-secondary">
+
+                                Cancel
+
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-success">
+
+                                {% if resume %}
+                                    Replace Resume
+                                {% else %}
+                                    Upload Resume
+                                {% endif %}
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

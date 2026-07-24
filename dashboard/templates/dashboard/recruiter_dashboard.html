@@ -1,0 +1,597 @@
+{% extends "base.html" %}
+
+{% block title %}
+Recruiter Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="mb-4">
+
+        <h2>Recruiter Dashboard</h2>
+
+        <p class="text-muted">
+
+            {% if request.user.first_name %}
+                Welcome, {{ request.user.first_name }} 👋
+            {% else %}
+                Welcome, {{ request.user.username }} 👋
+            {% endif %}
+
+        </p>
+
+    </div>
+
+    <!-- Dashboard Statistics -->
+
+    <div class="row g-4 mb-5">
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card shadow-sm border-primary">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">Total Jobs</h6>
+
+                    <h2 class="text-primary">
+
+                        {{ total_jobs }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card shadow-sm border-success">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">Active Jobs</h6>
+
+                    <h2 class="text-success">
+
+                        {{ active_jobs }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card shadow-sm border-danger">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">Closed Jobs</h6>
+
+                    <h2 class="text-danger">
+
+                        {{ closed_jobs }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card shadow-sm border-info">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">Applicants</h6>
+
+                    <h2 class="text-info">
+
+                        {{ total_applicants }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card shadow-sm border-warning">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">Pending</h6>
+
+                    <h2 class="text-warning">
+
+                        {{ pending_applications }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card shadow-sm border-dark">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">Avg AI Score</h6>
+
+                    <h2 class="text-dark">
+
+                        {{ average_match_score }}%
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Recent Jobs -->
+
+    <div class="card shadow mb-5">
+
+        <div class="card-header bg-primary text-white">
+
+            <h4 class="mb-0">
+
+                Recent Jobs
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if jobs %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>Title</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Posted</th>
+                            <th>Applicants</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for job in jobs %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>{{ job.title }}</strong>
+
+                            </td>
+
+                            <td>
+
+                                {{ job.location }}
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-primary">
+
+                                    {{ job.get_status_display }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                {{ job.created_at|date:"d M Y" }}
+
+                            </td>
+
+                            <td>
+
+                                {{ job.applicant_count }}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-info">
+
+                No jobs posted yet.
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- Recent Applications -->
+
+    <div class="card shadow mb-5">
+
+        <div class="card-header bg-success text-white">
+
+            <h4 class="mb-0">
+
+                Recent Applications
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if recent_applications %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Candidate</th>
+                            <th>Job</th>
+                            <th>Status</th>
+                            <th>AI Score</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for application in recent_applications %}
+
+                        <tr>
+
+                            <td>
+
+                                {{ application.candidate.get_full_name|default:application.candidate.username }}
+
+                            </td>
+
+                            <td>
+
+                                {{ application.job.title }}
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-info">
+
+                                    {{ application.get_status_display }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                {% if application.match_score >= 80 %}
+
+                                    <span class="badge bg-success">
+
+                                        {{ application.match_score }}%
+
+                                    </span>
+
+                                {% elif application.match_score >= 60 %}
+
+                                    <span class="badge bg-primary">
+
+                                        {{ application.match_score }}%
+
+                                    </span>
+
+                                {% elif application.match_score >= 40 %}
+
+                                    <span class="badge bg-warning text-dark">
+
+                                        {{ application.match_score }}%
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-danger">
+
+                                        {{ application.match_score }}%
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-info">
+
+                No applications yet.
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- Analytics Charts -->
+
+    <div class="row mt-5">
+
+        <div class="col-lg-6 mb-4">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-dark text-white">
+
+                    <h5 class="mb-0">
+
+                        Applications by Status
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <canvas id="applicationStatusChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-6 mb-4">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-secondary text-white">
+
+                    <h5 class="mb-0">
+
+                        Jobs by Status
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <canvas id="jobStatusChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+
+    <div class="mt-4">
+
+        <a href="{% url 'create-job' %}" class="btn btn-primary">
+
+            + Create Job
+
+        </a>
+
+        <a href="{% url 'job-list' %}" class="btn btn-success ms-2">
+
+            My Jobs
+
+        </a>
+
+    </div>
+
+</div>
+
+{% block extra_js %}
+
+<script>
+
+let applicationLabels = {{ application_status_labels|safe }};
+let applicationData = {{ application_status_counts|safe }};
+
+let jobLabels = {{ job_status_labels|safe }};
+let jobData = {{ job_status_counts|safe }};
+
+if (applicationLabels.length === 0) {
+
+    applicationLabels = [
+        "Applied",
+        "Screening",
+        "Interview",
+        "Offer",
+        "Rejected"
+    ];
+
+    applicationData = [0, 0, 0, 0, 0];
+
+}
+
+if (jobLabels.length === 0) {
+
+    jobLabels = [
+        "Published",
+        "Closed"
+    ];
+
+    jobData = [0, 0];
+
+}
+
+new Chart(
+
+    document.getElementById("applicationStatusChart"),
+
+    {
+
+        type: "bar",
+
+        data: {
+
+            labels: applicationLabels,
+
+            datasets: [
+
+                {
+
+                    label: "Applications",
+
+                    data: applicationData,
+
+                    backgroundColor: [
+
+                        "#0d6efd",
+                        "#198754",
+                        "#ffc107",
+                        "#6610f2",
+                        "#dc3545"
+
+                    ]
+
+                }
+
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        stepSize: 1
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+);
+
+new Chart(
+
+    document.getElementById("jobStatusChart"),
+
+    {
+
+        type: "doughnut",
+
+        data: {
+
+            labels: jobLabels,
+
+            datasets: [
+
+                {
+
+                    data: jobData,
+
+                    backgroundColor: [
+
+                        "#198754",
+                        "#dc3545"
+
+                    ]
+
+                }
+
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false
+
+        }
+
+    }
+
+);
+
+</script>
+
+
+{% endblock %}

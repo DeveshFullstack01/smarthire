@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            <h1>Admin Dashboard</h1>
+
+            <hr>
+
+            <h4>Welcome {{ request.user.username }}</h4>
+
+            <p>This is the Admin Dashboard.</p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

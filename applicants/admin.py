@@ -4,6 +4,23 @@ from .models import Application
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ("candidate", "job", "status", "match_score", "applied_at")
-    list_filter = ("status",)
-    search_fields = ("candidate__username", "job__title")
+    list_display = (
+        "candidate",
+        "job",
+        "status",
+        "applied_at",
+    )
+
+    list_filter = (
+        "status",
+    )
+
+    search_fields = (
+        "candidate__username",
+        "candidate__email",
+        "job__title",
+    )
+
+    ordering = (
+        "-applied_at",
+    )

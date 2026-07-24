@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block title %}
+Job Applicants
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-primary text-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <h3 class="mb-1">
+                        {{ job.title }}
+                    </h3>
+
+                    <small>
+                        {{ job.company.name }}
+                    </small>
+
+                </div>
+
+                <a
+                    href="{% url 'job-list' %}"
+                    class="btn btn-light">
+
+                    ← Back
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+            <h4 class="mb-4">
+
+                Applicants
+
+                <span class="badge bg-secondary">
+
+                    {{ page_obj.paginator.count }}
+
+                </span>
+
+            </h4>
+
+            <form
+                method="GET"
+                class="row g-3 mb-4">
+
+                <div class="col-md-4">
+
+                    <select
+                        name="status"
+                        class="form-select">
+
+                        <option value="">
+                            All Status
+                        </option>
+
+                        {% for value,label in status_choices %}
+
+                        <option
+                            value="{{ value }}"
+                            {% if status == value %}selected{% endif %}>
+
+                            {{ label }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <button
+                        class="btn btn-primary w-100">
+
+                        Filter
+
+                    </button>
+
+                </div>
+
+            </form>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>Candidate</th>
+
+                            <th>Email</th>
+
+                            <th>Applied</th>
+
+                            <th>Status</th>
+
+                            <th>AI Score</th>
+
+                            <th>Resume</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for application in applications %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>
+
+                                    {{ application.candidate.first_name }}
+                                    {{ application.candidate.last_name }}
+
+                                </strong>
+
+                            </td>
+
+                            <td>
+
+                                {{ application.candidate.email }}
+
+                            </td>
+
+                            <td>
+
+                                {{ application.applied_at|date:"d M Y" }}
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-info">
+
+                                    {{ application.get_status_display }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                {% if application.match_score >= 80 %}
+
+                                    <span class="badge bg-success">
+
+                                        {{ application.match_score }}%
+
+                                    </span>
+
+                                {% elif application.match_score >= 60 %}
+
+                                    <span class="badge bg-primary">
+
+                                        {{ application.match_score }}%
+
+                                    </span>
+
+                                {% elif application.match_score >= 40 %}
+
+                                    <span class="badge bg-warning text-dark">
+
+                                        {{ application.match_score }}%
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-danger">
+
+                                        {{ application.match_score }}%
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if application.resume %}
+
+                                    <a
+                                        href="{{ application.resume.file.url }}"
+                                        target="_blank"
+                                        class="btn btn-outline-success btn-sm">
+
+                                        View Resume
+
+                                    </a>
+
+                                {% else %}
+
+                                    <span class="text-danger">
+
+                                        Not Uploaded
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <div class="btn-group">
+
+                                    <a
+                                        href="{% url 'update-application-status' application.id %}"
+                                        class="btn btn-warning btn-sm">
+
+                                        Status
+
+                                    </a>
+
+                                    <a
+                                        href="{% url 'generate-interview-questions' application.id %}"
+                                        class="btn btn-info btn-sm">
+
+                                        AI Questions
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center py-4">
+
+                                No applicants found.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% if page_obj.has_other_pages %}
+
+            <nav class="mt-4">
+
+                <ul class="pagination justify-content-center">
+
+                    {% if page_obj.has_previous %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.previous_page_number }}&status={{ status }}">
+
+                            Previous
+
+                        </a>
+
+                    </li>
+
+                    {% endif %}
+
+                    <li class="page-item active">
+
+                        <span class="page-link">
+
+                            {{ page_obj.number }}
+
+                        </span>
+
+                    </li>
+
+                    {% if page_obj.has_next %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.next_page_number }}&status={{ status }}">
+
+                            Next
+
+                        </a>
+
+                    </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </nav>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

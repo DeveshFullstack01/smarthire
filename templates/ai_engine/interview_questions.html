@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+            <h3>AI Interview Questions</h3>
+        </div>
+
+        <div class="card-body">
+
+            <h4>{{ application.candidate.get_full_name|default:application.candidate.username }}</h4>
+
+            <p>
+                <strong>Email:</strong>
+                {{ application.candidate.email }}
+            </p>
+
+            <p>
+                <strong>Job:</strong>
+                {{ application.job.title }}
+            </p>
+
+            <p>
+                <strong>Resume Match Score:</strong>
+
+                {% if application.match_score %}
+                    <span class="badge bg-success">
+                        {{ application.match_score }}%
+                    </span>
+                {% else %}
+                    <span class="badge bg-secondary">
+                        Not Available
+                    </span>
+                {% endif %}
+            </p>
+
+            <hr>
+
+            <h4>Interview Questions</h4>
+
+            {% if questions %}
+
+                {% regroup questions by skill as skill_list %}
+
+                {% for skill in skill_list %}
+
+                    <div class="card mt-4">
+
+                        <div class="card-header bg-light">
+
+                            <h5>{{ skill.grouper }}</h5>
+
+                        </div>
+
+                        <ul class="list-group list-group-flush">
+
+                            {% for question in skill.list %}
+
+                                <li class="list-group-item">
+
+                                    {{ question.question }}
+
+                                    <span class="badge bg-info float-end">
+                                        {{ question.difficulty }}
+                                    </span>
+
+                                </li>
+
+                            {% endfor %}
+
+                        </ul>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="alert alert-warning">
+
+                    No interview questions generated yet.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        <div class="card-footer">
+
+            <a
+                href="{% url 'generate-interview-questions' application.id %}"
+                class="btn btn-success"
+            >
+                Generate Again
+            </a>
+
+            <a
+                href="javascript:history.back()"
+                class="btn btn-secondary"
+            >
+                Back
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

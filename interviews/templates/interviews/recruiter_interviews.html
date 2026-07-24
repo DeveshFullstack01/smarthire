@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}
+Recruiter Interviews
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-success text-white">
+
+            <h3 class="mb-0">
+
+                Scheduled Interviews
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if interviews %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>Candidate</th>
+                            <th>Job</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Interviewer</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for interview in interviews %}
+
+                        <tr>
+
+                            <td>
+
+                                {{ interview.application.candidate.get_full_name|default:interview.application.candidate.username }}
+
+                            </td>
+
+                            <td>
+
+                                {{ interview.application.job.title }}
+
+                            </td>
+
+                            <td>
+
+                                {{ interview.scheduled_at|date:"d M Y H:i" }}
+
+                            </td>
+
+                            <td>
+
+                                {{ interview.interview_type }}
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-primary">
+
+                                    {{ interview.status }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                {{ interview.interviewer_name }}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-info">
+
+                No interviews scheduled yet.
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

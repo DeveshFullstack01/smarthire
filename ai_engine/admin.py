@@ -1,3 +1,12 @@
 from django.contrib import admin
+from .models import InterviewQuestion
 
-# Register your models here.
+
+@admin.register(InterviewQuestion)
+class InterviewQuestionAdmin(admin.ModelAdmin):
+    list_display = (
+        "skill",
+        "difficulty",
+        "application",
+        "created_at",
+    )

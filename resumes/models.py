@@ -1,4 +1,5 @@
 from django.db import models
+
 from applicants.models import Application
 
 
@@ -8,9 +9,26 @@ class Resume(models.Model):
         on_delete=models.CASCADE,
         related_name="resume",
     )
-    file = models.FileField(upload_to="resumes/")
-    parsed_data = models.JSONField(null=True, blank=True)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    file = models.FileField(
+        upload_to="resumes/",
+    )
+
+    parsed_data = models.JSONField(
+        blank=True,
+        null=True,
+    )
+
+    uploaded_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
 
     def __str__(self):
-        return f"Resume for {self.application}"
+        return (
+            f"{self.application.candidate.username} - "
+            f"{self.application.job.title}"
+        )

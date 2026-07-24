@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Applications
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="mb-1">
+                My Applications
+            </h2>
+
+            <p class="text-muted mb-0">
+                Track the status of all your job applications.
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'candidate-job-list' %}"
+            class="btn btn-primary">
+
+            Browse Jobs
+
+        </a>
+
+    </div>
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="alert alert-{{ message.tags }}">
+
+                {{ message }}
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+    {% if applications %}
+
+    <div class="card shadow">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Job</th>
+                        <th>Company</th>
+                        <th>Status</th>
+                        <th>Applied On</th>
+                        <th>Resume</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for application in applications %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+
+                                {{ application.job.title }}
+
+                            </strong>
+
+                        </td>
+
+                        <td>
+
+                            {{ application.job.company.name }}
+
+                        </td>
+
+                        <td>
+
+                            {% if application.status == "Applied" %}
+
+                                <span class="badge bg-primary">
+
+                                    Applied
+
+                                </span>
+
+                            {% elif application.status == "Screening" %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    Screening
+
+                                </span>
+
+                            {% elif application.status == "Interview" %}
+
+                                <span class="badge bg-info text-dark">
+
+                                    Interview
+
+                                </span>
+
+                            {% elif application.status == "Offer" %}
+
+                                <span class="badge bg-success">
+
+                                    Offer
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-danger">
+
+                                    Rejected
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {{ application.applied_at|date:"d M Y" }}
+
+                        </td>
+
+                        <td>
+
+                            {% if application.resume %}
+
+                                <a
+                                    href="{{ application.resume.file.url }}"
+                                    target="_blank"
+                                    class="btn btn-outline-success btn-sm">
+
+                                    View Resume
+
+                                </a>
+
+                            {% else %}
+
+                                <a
+                                    href="{% url 'upload-resume' application.id %}"
+                                    class="btn btn-outline-primary btn-sm">
+
+                                    Upload Resume
+
+                                </a>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <a
+                                href="{% url 'job-detail' application.job.id %}"
+                                class="btn btn-outline-secondary btn-sm">
+
+                                View Job
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    {% if page_obj.has_other_pages %}
+
+    <nav class="mt-4">
+
+        <ul class="pagination justify-content-center">
+
+            {% if page_obj.has_previous %}
+
+                <li class="page-item">
+
+                    <a
+                        class="page-link"
+                        href="?page={{ page_obj.previous_page_number }}">
+
+                        Previous
+
+                    </a>
+
+                </li>
+
+            {% endif %}
+
+            <li class="page-item active">
+
+                <span class="page-link">
+
+                    {{ page_obj.number }}
+
+                    /
+
+                    {{ page_obj.paginator.num_pages }}
+
+                </span>
+
+            </li>
+
+            {% if page_obj.has_next %}
+
+                <li class="page-item">
+
+                    <a
+                        class="page-link"
+                        href="?page={{ page_obj.next_page_number }}">
+
+                        Next
+
+                    </a>
+
+                </li>
+
+            {% endif %}
+
+        </ul>
+
+    </nav>
+
+    {% endif %}
+
+    {% else %}
+
+        <div class="alert alert-info text-center">
+
+            <h4>
+
+                No Applications Yet
+
+            </h4>
+
+            <p>
+
+                Start applying for jobs to track your applications here.
+
+            </p>
+
+            <a
+                href="{% url 'candidate-job-list' %}"
+                class="btn btn-primary">
+
+                Browse Jobs
+
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
