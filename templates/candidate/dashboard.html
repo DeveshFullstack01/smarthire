@@ -6,114 +6,184 @@ Candidate Dashboard
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container">
 
-    <div class="card shadow">
+    <div class="mb-4">
+        <h2 class="mb-1">Welcome back, {{ request.user.get_full_name|default:request.user.username }} 👋</h2>
+        <p class="text-muted">Here's an overview of your job search.</p>
+    </div>
 
-        <div class="card-body">
+    <!-- Stat cards -->
+    <div class="row g-3 mb-4">
 
-            <h2>Candidate Dashboard</h2>
-
-            <hr>
-
-            <h4>👋 Welcome {{ request.user.first_name }}</h4>
-
-            <div class="row mt-4">
-
-                <div class="col-md-4">
-
-                    <div class="card text-center border-primary">
-
-                        <div class="card-body">
-
-                            <h5>Applications Submitted</h5>
-
-                            <h2>12</h2>
-
-                        </div>
-
-                    </div>
-
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-primary h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Applications</h6>
+                    <h2 class="text-primary mb-0">{{ total_applications }}</h2>
                 </div>
+            </div>
+        </div>
 
-                <div class="col-md-4">
-
-                    <div class="card text-center border-success">
-
-                        <div class="card-body">
-
-                            <h5>Jobs Saved</h5>
-
-                            <h2>8</h2>
-
-                        </div>
-
-                    </div>
-
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-info h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">In Progress</h6>
+                    <h2 class="text-info mb-0">{{ in_progress }}</h2>
                 </div>
+            </div>
+        </div>
 
-                <div class="col-md-4">
-
-                    <div class="card text-center border-warning">
-
-                        <div class="card-body">
-
-                            <h5>Interviews Scheduled</h5>
-
-                            <h2>2</h2>
-
-                        </div>
-
-                    </div>
-
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-success h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Offers</h6>
+                    <h2 class="text-success mb-0">{{ offers }}</h2>
                 </div>
+            </div>
+        </div>
 
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-warning h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Interviews</h6>
+                    <h2 class="text-warning mb-0">{{ total_interviews }}</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Profile completion nudge -->
+    {% if profile_completion < 100 %}
+    <div class="card shadow-sm mb-4 border-start border-4 border-warning">
+        <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+            <div class="me-3">
+                <strong>Your profile is {{ profile_completion }}% complete.</strong>
+                <div class="text-muted small">
+                    A complete profile helps recruiters find you.
+                </div>
+            </div>
+            <a href="{% url 'my-profile' %}" class="btn btn-outline-warning btn-sm">
+                Complete Profile
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+
+        <!-- Recent applications -->
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recent Applications</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_applications %}
+                    <div class="list-group list-group-flush">
+                        {% for app in recent_applications %}
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>{{ app.job.title }}</strong>
+                                    <div class="text-muted small">
+                                        {{ app.job.company.name }} &middot;
+                                        {{ app.applied_at|date:"d M Y" }}
+                                    </div>
+                                </div>
+                                <span class="badge bg-info align-self-center">
+                                    {{ app.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'my-applications' %}"
+                       class="btn btn-sm btn-outline-primary mt-3">
+                        View all
+                    </a>
+                    {% else %}
+                    <p class="text-muted mb-0">
+                        You haven't applied to any jobs yet.
+                        <a href="{% url 'candidate-job-list' %}">Browse jobs</a>.
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming interviews + chart -->
+        <div class="col-lg-5 mb-4">
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Upcoming Interviews</h5>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_interviews %}
+                    {% for iv in upcoming_interviews %}
+                    <a href="{% url 'interview-detail' iv.id %}"
+                       class="d-block mb-2 text-decoration-none">
+                        <strong>{{ iv.application.job.title }}</strong>
+                        <div class="text-muted small">
+                            {{ iv.scheduled_at|date:"d M Y, H:i" }}
+                        </div>
+                    </a>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted mb-0">No upcoming interviews.</p>
+                    {% endif %}
+                </div>
             </div>
 
-            <div class="mt-5">
-
-                <h4>Recent Jobs</h4>
-
-                <ul class="list-group">
-
-                    <li class="list-group-item">
-                        Java Backend Developer
-                    </li>
-
-                    <li class="list-group-item">
-                        Python Developer
-                    </li>
-
-                    <li class="list-group-item">
-                        React Developer
-                    </li>
-
-                </ul>
-
-            </div>
-
-            <div class="mt-4">
-
-                <a
-                    href="{% url 'candidate-job-list' %}"
-                    class="btn btn-primary">
-
-                    Browse Jobs
-
-                </a>
-                
-                <a
-                    href="{% url 'my-applications' %}"
-                    class="btn btn-secondary">
-
-                    My Applications
-                </a>
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Applications by Status</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="statusChart" height="200"></canvas>
+                </div>
             </div>
 
         </div>
 
     </div>
 
+    <div class="mb-5">
+        <a href="{% url 'candidate-job-list' %}" class="btn btn-primary">
+            Browse Jobs
+        </a>
+        <a href="{% url 'my-profile' %}" class="btn btn-outline-secondary ms-2">
+            My Profile
+        </a>
+    </div>
+
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const labels = {{ status_labels|safe }};
+    const data = {{ status_data|safe }};
+
+    new Chart(document.getElementById("statusChart"), {
+        type: "doughnut",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: [
+                    "#0d6efd", "#0dcaf0", "#ffc107", "#198754", "#dc3545"
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: "bottom" } }
+        }
+    });
+</script>
 {% endblock %}

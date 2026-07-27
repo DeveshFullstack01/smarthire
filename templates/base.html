@@ -123,6 +123,12 @@
                     {% elif user.role == "candidate" %}
 
                         <li class="nav-item">
+                            <a class="nav-link" href="{% url 'candidate-dashboard' %}">
+                                <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
                             <a class="nav-link" href="{% url 'candidate-job-list' %}">
                                 <i class="bi bi-search me-1"></i>Jobs
                             </a>
@@ -145,7 +151,7 @@
                                 <i class="bi bi-person-vcard me-1"></i>Profile
                             </a>
                         </li>
- 
+
                     {% endif %}
 
                     <!-- Notification bell -->
@@ -198,6 +204,7 @@
                                     No notifications yet
                                 </span>
                             </li>
+                            {% endfor %}
 
                             <li><hr class="dropdown-divider"></li>
 
@@ -207,8 +214,6 @@
                                     View all
                                 </a>
                             </li>
-
-                            {% endfor %}
 
                         </ul>
 

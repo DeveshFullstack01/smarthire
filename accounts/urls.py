@@ -94,9 +94,6 @@ urlpatterns = [
      path("web/candidate/profile/skill/<int:skill_id>/delete/", delete_skill, name="delete-skill"),
      path("web/candidate/profile/", my_profile, name="my-profile"),
      
-    
-    
-    
-    
-    
 ]
+    
+    

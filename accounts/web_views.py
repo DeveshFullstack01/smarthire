@@ -89,3 +89,16 @@ def candidate_dashboard(request):
         request,
         "candidate/dashboard.html",
     )
+    
+@login_required
+@role_required(User.Role.CANDIDATE)
+def candidate_dashboard(request):
+    from .candidate_dashboard_service import get_candidate_dashboard_data
+
+    context = get_candidate_dashboard_data(request.user)
+
+    return render(
+        request,
+        "candidate/dashboard.html",
+        context,
+    )

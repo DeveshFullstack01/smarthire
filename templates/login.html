@@ -1,76 +1,259 @@
 {% extends "base.html" %}
 
 {% block title %}
-Login | SmartHire
+Login | SmartHire ATS
 {% endblock %}
 
 {% block content %}
 
-<div class="row justify-content-center">
+<style>
+body{
+    background: linear-gradient(135deg,#0d6efd,#6610f2);
+}
 
-    <div class="col-md-5">
+.login-container{
+    min-height:85vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
 
-        <div class="card shadow">
+.login-card{
+    width:100%;
+    max-width:460px;
+    border:none;
+    border-radius:18px;
+    overflow:hidden;
+    background:white;
+    box-shadow:0 15px 40px rgba(0,0,0,.25);
+    animation:fadeIn .7s ease;
+}
 
-            <div class="card-header bg-primary text-white">
-                <h3 class="mb-0 text-center">
-                    SmartHire Login
-                </h3>
+.login-header{
+    background:linear-gradient(135deg,#0d6efd,#4f46e5);
+    color:white;
+    padding:30px;
+    text-align:center;
+}
+
+.login-header h2{
+    font-weight:700;
+}
+
+.login-header p{
+    margin-top:8px;
+    opacity:.9;
+}
+
+.card-body{
+    padding:35px;
+}
+
+.form-control{
+    height:50px;
+    border-radius:10px;
+}
+
+.form-control:focus{
+    box-shadow:none;
+    border-color:#0d6efd;
+}
+
+.input-group-text{
+    background:white;
+    cursor:pointer;
+}
+
+.btn-login{
+    height:50px;
+    border-radius:10px;
+    font-weight:600;
+    font-size:17px;
+    transition:.3s;
+}
+
+.btn-login:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(13,110,253,.3);
+}
+
+.extra-links a{
+    text-decoration:none;
+    font-size:14px;
+}
+
+.extra-links a:hover{
+    text-decoration:underline;
+}
+
+.logo-circle{
+    width:75px;
+    height:75px;
+    border-radius:50%;
+    background:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:auto;
+    margin-bottom:15px;
+    font-size:35px;
+}
+
+.alert{
+    border-radius:10px;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+</style>
+
+<div class="container login-container">
+
+    <div class="login-card">
+
+        <div class="login-header">
+
+            <div class="logo-circle">
+                💼
             </div>
 
-            <div class="card-body">
+            <h2>SmartHire ATS</h2>
 
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
+            <p>
+                Welcome Back! Please login to continue.
+            </p>
 
-                <form method="POST">
+        </div>
 
-                    {% csrf_token %}
+        <div class="card-body">
 
-                    <div class="mb-3">
+            {% if messages %}
+                {% for message in messages %}
 
-                        <label class="form-label">
-                            Username
-                        </label>
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
 
-                        <input
-                            type="text"
-                            name="username"
-                            class="form-control"
-                            placeholder="Enter Username"
-                            required>
+                        {{ message }}
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert">
+                        </button>
 
                     </div>
 
-                    <div class="mb-3">
+                {% endfor %}
+            {% endif %}
 
-                        <label class="form-label">
-                            Password
-                        </label>
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="mb-4">
+
+                    <label class="form-label fw-semibold">
+                        Username
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="username"
+                        placeholder="Enter your username"
+                        required>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        Password
+                    </label>
+
+                    <div class="input-group">
 
                         <input
                             type="password"
-                            name="password"
+                            id="password"
                             class="form-control"
-                            placeholder="Enter Password"
+                            name="password"
+                            placeholder="Enter your password"
                             required>
+
+                        <span
+                            class="input-group-text"
+                            onclick="togglePassword()">
+
+                            👁
+
+                        </span>
 
                     </div>
 
-                    <button
-                        type="submit"
-                        class="btn btn-primary w-100">
+                </div>
 
-                        Login
+                <div class="d-flex justify-content-between align-items-center mb-4">
 
-                    </button>
+                    <div class="form-check">
 
-                </form>
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="remember">
+
+                        <label
+                            class="form-check-label"
+                            for="remember">
+
+                            Remember Me
+
+                        </label>
+
+                    </div>
+
+                    <a href="#" class="text-decoration-none">
+                        Forgot Password?
+                    </a>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary w-100 btn-login">
+
+                    Login
+
+                </button>
+
+            </form>
+
+            <hr class="my-4">
+
+            <div class="text-center extra-links">
+
+                <p class="mb-2">
+
+                    Don't have an account?
+
+                </p>
+
+                <a href="{% url 'candidate-signup' %}">
+                    Candidate Register
+                </a>
+
+                |
+
+                <a href="{% url 'recruiter-signup' %}">
+                    Recruiter Register
+                </a>
 
             </div>
 
@@ -79,5 +262,22 @@ Login | SmartHire
     </div>
 
 </div>
+
+<script>
+
+function togglePassword(){
+
+    const password=document.getElementById("password");
+
+    if(password.type==="password"){
+        password.type="text";
+    }
+    else{
+        password.type="password";
+    }
+
+}
+
+</script>
 
 {% endblock %}
