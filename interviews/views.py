@@ -76,7 +76,16 @@ def schedule_interview(request, application_id):
             "Interview scheduling failed validation. application_id=%s",
             application.id,
         )
-
+        notify(
+                recipient=application.candidate,
+                message=(
+                    f"Interview scheduled for {application.job.title} "
+                    f"on {interview.scheduled_at:%d %b %Y, %H:%M}."
+                ),
+                url=f"/interviews/{interview.id}/",
+                email_subject="Your interview has been scheduled",
+            )
+        
         messages.error(
             request,
             "Please correct the errors below.",
@@ -267,8 +276,8 @@ def respond_to_interview(request, interview_id):
             f"interview for {interview.application.job.title}."
         ),
         url=f"/interviews/{interview.id}/",
+        email_subject="A candidate responded to an interview",
     )
-
     messages.success(request, "Your response has been recorded.")
 
     return redirect("interview-detail", interview_id=interview.id)
