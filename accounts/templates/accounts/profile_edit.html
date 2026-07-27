@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="container" style="max-width: 760px;">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Edit Profile</h3>
+        <a href="{% url 'my-profile' %}" class="btn btn-outline-secondary btn-sm">
+            View Profile
+        </a>
+    </div>
+
+    <!-- Main profile fields -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><strong>Basic Information</strong></div>
+        <div class="card-body">
+
+            <form method="post" action="{% url 'edit-profile' %}">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Headline</label>
+                    {{ form.headline }}
+                    {% if form.headline.help_text %}
+                    <div class="form-text">{{ form.headline.help_text }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Bio</label>
+                    {{ form.bio }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Phone</label>
+                        {{ form.phone }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Location</label>
+                        {{ form.location }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">LinkedIn URL</label>
+                    {{ form.linkedin_url }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">GitHub URL</label>
+                    {{ form.github_url }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Portfolio URL</label>
+                    {{ form.portfolio_url }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Save Changes
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><strong>Skills</strong></div>
+        <div class="card-body">
+
+            <div class="mb-3">
+                {% for skill in skills %}
+                <span class="badge bg-primary fs-6 me-1 mb-1">
+                    {{ skill.name }}
+                    <form method="post"
+                          action="{% url 'delete-skill' skill.id %}"
+                          class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn-close btn-close-white ms-1"
+                                style="font-size: 0.6rem;"
+                                aria-label="Remove"></button>
+                    </form>
+                </span>
+                {% empty %}
+                <span class="text-muted">No skills yet.</span>
+                {% endfor %}
+            </div>
+
+            <form method="post" action="{% url 'add-skill' %}"
+                  class="d-flex gap-2">
+                {% csrf_token %}
+                <input type="text" name="name" class="form-control"
+                       placeholder="e.g. Python" maxlength="60" required>
+                <button type="submit" class="btn btn-success text-nowrap">
+                    Add Skill
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

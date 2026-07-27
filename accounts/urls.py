@@ -15,6 +15,12 @@ from .web_views import (
     candidate_dashboard,
 )
 
+from .profile_views import (
+    my_profile,
+    edit_profile,
+    add_skill,
+    delete_skill,
+)
 urlpatterns = [
     # ==========================
     # Web Pages
@@ -82,4 +88,26 @@ urlpatterns = [
         VerifyEmailView.as_view(),
         name="verify-email",
     ),
+    
+    path(
+        "web/candidate/profile/edit/",
+        edit_profile,
+        name="edit-profile",
+    ),
+    path(
+        "web/candidate/profile/skill/add/",
+        add_skill,
+        name="add-skill",
+    ),
+    path(
+        "web/candidate/profile/skill/<int:skill_id>/delete/",
+        delete_skill,
+        name="delete-skill",
+    ),
+    
+    
+    
+    
+    
+    
 ]

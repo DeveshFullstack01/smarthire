@@ -26,6 +26,7 @@ def candidate_job_list(request):
 
     jobs = (
         Job.objects
+        .filter(status=Job.JobStatus.PUBLISHED)
         .select_related("company")
         .order_by("-created_at")
     )

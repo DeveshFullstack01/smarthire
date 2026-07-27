@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+# Candidate profile models (CandidateProfile, Skill, Experience, Education)
+from .profile_models import *  # noqa: E402,F401,F403
 
 class User(AbstractUser):
     class Role(models.TextChoices):
@@ -18,3 +19,4 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.role})"
+    

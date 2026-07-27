@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="container" style="max-width: 860px;">
+
+    <!-- Header card -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-start flex-wrap">
+
+                <div>
+                    <h3 class="mb-1">
+                        {{ profile.user.get_full_name|default:profile.user.username }}
+                    </h3>
+
+                    {% if profile.headline %}
+                    <p class="text-muted mb-2">{{ profile.headline }}</p>
+                    {% endif %}
+
+                    <div class="text-muted small">
+                        {% if profile.location %}
+                        <span class="me-3">
+                            <i class="bi bi-geo-alt"></i> {{ profile.location }}
+                        </span>
+                        {% endif %}
+                        {% if profile.phone %}
+                        <span class="me-3">
+                            <i class="bi bi-telephone"></i> {{ profile.phone }}
+                        </span>
+                        {% endif %}
+                        <span>
+                            <i class="bi bi-envelope"></i> {{ profile.user.email }}
+                        </span>
+                    </div>
+                </div>
+
+                <a href="{% url 'edit-profile' %}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Edit Profile
+                </a>
+
+            </div>
+
+            <!-- Completion bar -->
+            <div class="mt-4">
+                <div class="d-flex justify-content-between small text-muted mb-1">
+                    <span>Profile completion</span>
+                    <span>{{ profile.completion_percentage }}%</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-success"
+                         role="progressbar"
+                         style="width: {{ profile.completion_percentage }}%;"
+                         aria-valuenow="{{ profile.completion_percentage }}"
+                         aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+
+            <!-- Links -->
+            {% if profile.linkedin_url or profile.github_url or profile.portfolio_url %}
+            <div class="mt-3">
+                {% if profile.linkedin_url %}
+                <a href="{{ profile.linkedin_url }}" target="_blank"
+                   rel="noopener" class="btn btn-sm btn-outline-secondary me-1">
+                    <i class="bi bi-linkedin"></i> LinkedIn
+                </a>
+                {% endif %}
+                {% if profile.github_url %}
+                <a href="{{ profile.github_url }}" target="_blank"
+                   rel="noopener" class="btn btn-sm btn-outline-secondary me-1">
+                    <i class="bi bi-github"></i> GitHub
+                </a>
+                {% endif %}
+                {% if profile.portfolio_url %}
+                <a href="{{ profile.portfolio_url }}" target="_blank"
+                   rel="noopener" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-globe"></i> Portfolio
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- About -->
+    {% if profile.bio %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><strong>About</strong></div>
+        <div class="card-body">
+            <p class="mb-0">{{ profile.bio|linebreaksbr }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Skills -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><strong>Skills</strong></div>
+        <div class="card-body">
+            {% for skill in skills %}
+            <span class="badge bg-primary fs-6 me-1 mb-1">{{ skill.name }}</span>
+            {% empty %}
+            <span class="text-muted">No skills added yet.</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Experience -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><strong>Experience</strong></div>
+        <div class="card-body">
+            {% for exp in experiences %}
+            <div class="mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                <h6 class="mb-0">{{ exp.job_title }}</h6>
+                <div class="text-muted small">
+                    {{ exp.company }} &middot;
+                    {{ exp.start_date|date:"M Y" }} &ndash;
+                    {% if exp.is_current %}Present{% else %}{{ exp.end_date|date:"M Y" }}{% endif %}
+                </div>
+                {% if exp.description %}
+                <p class="mb-0 mt-1 small">{{ exp.description|linebreaksbr }}</p>
+                {% endif %}
+            </div>
+            {% empty %}
+            <span class="text-muted">No experience added yet.</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Education -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><strong>Education</strong></div>
+        <div class="card-body">
+            {% for edu in educations %}
+            <div class="mb-2">
+                <h6 class="mb-0">{{ edu.degree }}</h6>
+                <div class="text-muted small">
+                    {{ edu.institution }} &middot;
+                    {{ edu.start_year }}{% if edu.end_year %} &ndash; {{ edu.end_year }}{% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <span class="text-muted">No education added yet.</span>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
