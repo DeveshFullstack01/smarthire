@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST
 from accounts.decorators import role_required
 from accounts.models import User
 from applicants.models import Application
+from notifications.services import notify
 
 from .forms import InterviewForm
 from .models import Interview
@@ -53,6 +54,15 @@ def schedule_interview(request, application_id):
                 "Interview scheduled. interview_id=%s application_id=%s",
                 interview.id,
                 application.id,
+            )
+
+            notify(
+                recipient=application.candidate,
+                message=(
+                    f"Interview scheduled for {application.job.title} "
+                    f"on {interview.scheduled_at:%d %b %Y, %H:%M}."
+                ),
+                url=f"/interviews/{interview.id}/",
             )
 
             messages.success(
@@ -246,6 +256,17 @@ def respond_to_interview(request, interview_id):
         "Candidate responded to interview. interview_id=%s response=%s",
         interview.id,
         response,
+    )
+
+    recruiter = interview.application.job.company.owner
+
+    notify(
+        recipient=recruiter,
+        message=(
+            f"{request.user.username} responded '{response}' to the "
+            f"interview for {interview.application.job.title}."
+        ),
+        url=f"/interviews/{interview.id}/",
     )
 
     messages.success(request, "Your response has been recorded.")
