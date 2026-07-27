@@ -5,6 +5,19 @@ from .parser import extract_text_from_pdf
 
 logger = logging.getLogger(__name__)
 
+def analyze_resume_file(resume_file_path, job_description):
+    """
+    Full structured analysis of a resume PDF against a job description.
+
+    Wraps the enhanced analyzer with PDF parsing, so callers pass a file
+    path (as the upload view already does) and get back the rich dict for
+    storage in Resume.parsed_data. Backwards-compatible: still contains
+    'score', 'matched_skills', 'missing_skills' like calculate_match_score.
+    """
+    from .resume_analyzer import analyze_resume
+
+    resume_text = extract_text_from_pdf(resume_file_path)
+    return analyze_resume(resume_text, job_description)
 
 def calculate_match_score(
     resume_file_path,

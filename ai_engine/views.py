@@ -5,7 +5,7 @@ from applicants.models import Application
 
 from .models import InterviewQuestion
 from .question_service import generate_interview_questions
-
+from ai_engine.services import analyze_resume_file
 
 @login_required
 def interview_questions(request, application_id):

@@ -174,11 +174,91 @@ AI Resume Analysis
 
             <hr>
 
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header"><strong>Contact Details</strong></div>
+                        <div class="card-body">
+                            {% if parsed.contact %}
+                            <ul class="list-unstyled mb-0 small">
+                                {% if parsed.contact.email %}
+                                <li><i class="bi bi-envelope me-1"></i>{{ parsed.contact.email }}</li>
+                                {% endif %}
+                                {% if parsed.contact.phone %}
+                                <li><i class="bi bi-telephone me-1"></i>{{ parsed.contact.phone }}</li>
+                                {% endif %}
+                                {% if parsed.contact.linkedin %}
+                                <li><i class="bi bi-linkedin me-1"></i>{{ parsed.contact.linkedin }}</li>
+                                {% endif %}
+                                {% if parsed.contact.github %}
+                                <li><i class="bi bi-github me-1"></i>{{ parsed.contact.github }}</li>
+                                {% endif %}
+                            </ul>
+                            {% else %}
+                            <span class="text-muted small">No contact details extracted.</span>
+                            {% endif %}
+                            {% if parsed.years_of_experience %}
+                            <hr class="my-2">
+                            <span class="badge bg-secondary">
+                                {{ parsed.years_of_experience }} years experience
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header"><strong>Education &amp; Certifications</strong></div>
+                        <div class="card-body">
+                            {% if parsed.education %}
+                            <h6 class="small text-muted mb-1">Education</h6>
+                            <ul class="small mb-2">
+                                {% for edu in parsed.education %}
+                                <li>{{ edu }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            {% if parsed.certifications %}
+                            <h6 class="small text-muted mb-1">Certifications</h6>
+                            <ul class="small mb-0">
+                                {% for cert in parsed.certifications %}
+                                <li>{{ cert }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            {% if not parsed.education and not parsed.certifications %}
+                            <span class="text-muted small">None extracted.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {% if parsed.recommendations %}
+            <div class="card border-info mb-3">
+                <div class="card-header bg-info text-white">
+                    <strong>AI Suggestions</strong>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        {% for rec in parsed.recommendations %}
+                        <li>{{ rec }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            <hr>
+
             <h4>
 
                 AI Recommendation
+            <h4>
 
-            </h4>
 
             {% if parsed.score >= 80 %}
 
