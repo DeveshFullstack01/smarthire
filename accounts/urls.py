@@ -89,22 +89,11 @@ urlpatterns = [
         name="verify-email",
     ),
     
-    path(
-        "web/candidate/profile/edit/",
-        edit_profile,
-        name="edit-profile",
-    ),
-    path(
-        "web/candidate/profile/skill/add/",
-        add_skill,
-        name="add-skill",
-    ),
-    path(
-        "web/candidate/profile/skill/<int:skill_id>/delete/",
-        delete_skill,
-        name="delete-skill",
-    ),
-    
+     path("web/candidate/profile/edit/", edit_profile, name="edit-profile"),  
+     path("web/candidate/profile/skill/add/", add_skill, name="add-skill"),
+     path("web/candidate/profile/skill/<int:skill_id>/delete/", delete_skill, name="delete-skill"),
+     path("web/candidate/profile/", my_profile, name="my-profile"),
+     
     
     
     
