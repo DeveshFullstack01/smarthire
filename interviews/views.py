@@ -50,6 +50,12 @@ def schedule_interview(request, application_id):
             interview.application = application
             interview.save()
 
+            # Advance the application into the INTERVIEW stage so the
+            # pipeline board and dashboards reflect the scheduled interview.
+            if application.status != Application.Status.INTERVIEW:
+                application.status = Application.Status.INTERVIEW
+                application.save(update_fields=["status", "updated_at"])  
+          
             logger.info(
                 "Interview scheduled. interview_id=%s application_id=%s",
                 interview.id,

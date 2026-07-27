@@ -6,24 +6,212 @@ Admin Dashboard
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container">
 
-    <div class="card shadow">
+    <div class="mb-4">
+        <h2 class="mb-1">Admin Dashboard</h2>
+        <p class="text-muted">Platform overview and analytics.</p>
+    </div>
 
-        <div class="card-body">
+    <!-- Top stat cards -->
+    <div class="row g-3 mb-4">
 
-            <h1>Admin Dashboard</h1>
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-primary h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Total Users</h6>
+                    <h2 class="text-primary mb-0">{{ total_users }}</h2>
+                </div>
+            </div>
+        </div>
 
-            <hr>
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-success h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Candidates</h6>
+                    <h2 class="text-success mb-0">{{ total_candidates }}</h2>
+                </div>
+            </div>
+        </div>
 
-            <h4>Welcome {{ request.user.username }}</h4>
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-info h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Recruiters</h6>
+                    <h2 class="text-info mb-0">{{ total_recruiters }}</h2>
+                </div>
+            </div>
+        </div>
 
-            <p>This is the Admin Dashboard.</p>
-
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-secondary h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Companies</h6>
+                    <h2 class="text-secondary mb-0">{{ total_companies }}</h2>
+                </div>
+            </div>
         </div>
 
     </div>
 
+    <div class="row g-3 mb-4">
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Jobs</h6>
+                    <h4 class="mb-0">{{ total_jobs }}</h4>
+                    <small class="text-muted">{{ published_jobs }} published</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Applications</h6>
+                    <h4 class="mb-0">{{ total_applications }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Interviews</h6>
+                    <h4 class="mb-0">{{ total_interviews }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm h-100 {% if unverified_users %}border-warning{% endif %}">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Unverified</h6>
+                    <h4 class="mb-0 {% if unverified_users %}text-warning{% endif %}">
+                        {{ unverified_users }}
+                    </h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <!-- Recent users -->
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recent Users</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Verified</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for u in recent_users %}
+                                <tr>
+                                    <td>{{ u.username }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            {{ u.get_role_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if u.is_verified %}
+                                        <span class="text-success">Yes</span>
+                                        {% else %}
+                                        <span class="text-warning">No</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ u.date_joined|date:"d M Y" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-muted text-center">
+                                        No users yet.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications chart -->
+        <div class="col-lg-5 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Applications by Status</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="appStatusChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Recent companies -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Recent Companies</h5>
+        </div>
+        <div class="card-body">
+            {% if recent_companies %}
+            <ul class="list-group list-group-flush">
+                {% for co in recent_companies %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>{{ co.name }}</span>
+                    <span class="text-muted small">
+                        Owner: {{ co.owner.username }}
+                    </span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted mb-0">No companies yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const labels = {{ app_status_labels|safe }};
+    const data = {{ app_status_data|safe }};
+
+    new Chart(document.getElementById("appStatusChart"), {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Applications",
+                data: data,
+                backgroundColor: [
+                    "#0d6efd", "#0dcaf0", "#ffc107", "#198754", "#dc3545"
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
 {% endblock %}

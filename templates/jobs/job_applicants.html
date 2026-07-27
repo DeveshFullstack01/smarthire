@@ -26,11 +26,9 @@ Job Applicants
 
                 </div>
 
-                <a
-
                 <div class="d-flex gap-2">
 
-                    
+                    <a
                         href="{% url 'candidate-pipeline' job.id %}"
                         class="btn btn-light">
 
@@ -38,13 +36,15 @@ Job Applicants
 
                     </a>
 
+                    <a
+                        href="{% url 'job-list' %}"
+                        class="btn btn-light">
 
-                    href="{% url 'job-list' %}"
-                    class="btn btn-light">
+                        ← Back
 
-                    ← Back
+                    </a>
 
-                </a>
+                </div>
 
             </div>
 
@@ -78,15 +78,15 @@ Job Applicants
                             All Status
                         </option>
 
-                        {% for value,label in status_choices %}
+                        {% for value, label in status_choices %}
 
-                        <option
-                            value="{{ value }}"
-                            {% if status == value %}selected{% endif %}>
+                            <option
+                                value="{{ value }}"
+                                {% if status == value %}selected{% endif %}>
 
-                            {{ label }}
+                                {{ label }}
 
-                        </option>
+                            </option>
 
                         {% endfor %}
 
@@ -97,6 +97,7 @@ Job Applicants
                 <div class="col-md-2">
 
                     <button
+                        type="submit"
                         class="btn btn-primary w-100">
 
                         Filter
@@ -116,17 +117,11 @@ Job Applicants
                         <tr>
 
                             <th>Candidate</th>
-
                             <th>Email</th>
-
                             <th>Applied</th>
-
                             <th>Status</th>
-
                             <th>AI Score</th>
-
                             <th>Resume</th>
-
                             <th>Actions</th>
 
                         </tr>
@@ -285,55 +280,55 @@ Job Applicants
 
             {% if page_obj.has_other_pages %}
 
-            <nav class="mt-4">
+                <nav class="mt-4">
 
-                <ul class="pagination justify-content-center">
+                    <ul class="pagination justify-content-center">
 
-                    {% if page_obj.has_previous %}
+                        {% if page_obj.has_previous %}
 
-                    <li class="page-item">
+                        <li class="page-item">
 
-                        <a
-                            class="page-link"
-                            href="?page={{ page_obj.previous_page_number }}&status={{ status }}">
+                            <a
+                                class="page-link"
+                                href="?page={{ page_obj.previous_page_number }}&status={{ status }}">
 
-                            Previous
+                                Previous
 
-                        </a>
+                            </a>
 
-                    </li>
+                        </li>
 
-                    {% endif %}
+                        {% endif %}
 
-                    <li class="page-item active">
+                        <li class="page-item active">
 
-                        <span class="page-link">
+                            <span class="page-link">
 
-                            {{ page_obj.number }}
+                                {{ page_obj.number }}
 
-                        </span>
+                            </span>
 
-                    </li>
+                        </li>
 
-                    {% if page_obj.has_next %}
+                        {% if page_obj.has_next %}
 
-                    <li class="page-item">
+                        <li class="page-item">
 
-                        <a
-                            class="page-link"
-                            href="?page={{ page_obj.next_page_number }}&status={{ status }}">
+                            <a
+                                class="page-link"
+                                href="?page={{ page_obj.next_page_number }}&status={{ status }}">
 
-                            Next
+                                Next
 
-                        </a>
+                            </a>
 
-                    </li>
+                        </li>
 
-                    {% endif %}
+                        {% endif %}
 
-                </ul>
+                    </ul>
 
-            </nav>
+                </nav>
 
             {% endif %}
 

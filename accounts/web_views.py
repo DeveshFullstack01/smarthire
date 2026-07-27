@@ -72,13 +72,17 @@ def redirect_user(user):
 
     return redirect("candidate-dashboard")
 
-
+@login_required
 @role_required(User.Role.ADMIN)
 def admin_dashboard(request):
+    from .admin_dashboard_service import get_admin_dashboard_data
+
+    context = get_admin_dashboard_data()
 
     return render(
         request,
         "admin/dashboard.html",
+        context,
     )
 
 @login_required
