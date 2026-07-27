@@ -71,6 +71,29 @@ SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SAMESITE = "Lax"
 
+# Origins Django will trust for CSRF-protected POSTs (needed behind a
+# reverse proxy / when served from a real domain). Comma-separated in env.
+CSRF_TRUSTED_ORIGINS = config(
+    "CSRF_TRUSTED_ORIGINS",
+    default="http://localhost,http://127.0.0.1",
+).split(",")
+
+# HTTPS hardening. These are OFF by default so local/HTTP Docker testing
+# works, and switch ON only when SECURE_SSL=True is set in the environment
+# (i.e. once the site is served over HTTPS behind a real certificate).
+SECURE_SSL = config("SECURE_SSL", default=False, cast=bool)
+
+if SECURE_SSL:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    # Tell Django it is behind a proxy that terminates TLS, so it can
+    # detect the original HTTPS scheme from the forwarded header.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 # --------------------------------------------------
 # Installed Apps
 # --------------------------------------------------
@@ -151,7 +174,7 @@ TEMPLATES = [
 
                 "django.contrib.messages.context_processors.messages",
 
-                "notifications.context_processors.notifications",
+                 "notifications.context_processors.notifications",
 
             ],
 
