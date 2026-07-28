@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 def health_check(request):
-    logger.info("Health check endpoint called.")
+    logger.debug("Health check endpoint called.")
 
     return JsonResponse(
         {
