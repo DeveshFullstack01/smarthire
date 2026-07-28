@@ -1,54 +1,148 @@
 {% extends "base.html" %}
 
 {% block title %}
-Create Job | SmartHire
+Create Job | SmartHire ATS
 {% endblock %}
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container py-5">
 
-    <div class="card shadow">
+    <div class="row justify-content-center">
 
-        <div class="card-header bg-primary text-white">
+        <div class="col-lg-10">
 
-            <h3>Create New Job</h3>
+            <div class="card shadow-lg border-0">
 
-        </div>
+                <div class="card-header bg-primary text-white py-4">
 
-        <div class="card-body">
+                    <h2 class="mb-1">
+                        Create New Job
+                    </h2>
 
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-success">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+                    <p class="mb-0">
+                        Fill in the details below to publish a new job opening.
+                    </p>
 
-            <form method="POST">
+                </div>
 
-                {% csrf_token %}
+                <div class="card-body p-4">
 
-                {{ form.as_p }}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
 
-                <button
-                    type="submit"
-                    class="btn btn-success">
+                    <form method="post">
 
-                    Create Job
+                        {% csrf_token %}
 
-                </button>
+                        <div class="row">
 
-                <a
-                    href="{% url 'recruiter-dashboard' %}"
-                    class="btn btn-secondary">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    {{ form.title.label }}
+                                </label>
+                                {{ form.title }}
+                                {{ form.title.errors }}
+                            </div>
 
-                    Cancel
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    {{ form.location.label }}
+                                </label>
+                                {{ form.location }}
+                                {{ form.location.errors }}
+                            </div>
 
-                </a>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    {{ form.job_type.label }}
+                                </label>
+                                {{ form.job_type }}
+                                {{ form.job_type.errors }}
+                            </div>
 
-            </form>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    {{ form.status.label }}
+                                </label>
+                                {{ form.status }}
+                                {{ form.status.errors }}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    {{ form.salary.label }}
+                                </label>
+                                {{ form.salary }}
+                                {{ form.salary.errors }}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    {{ form.experience.label }}
+                                </label>
+                                {{ form.experience }}
+                                {{ form.experience.errors }}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    {{ form.vacancies.label }}
+                                </label>
+                                {{ form.vacancies }}
+                                {{ form.vacancies.errors }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    {{ form.application_deadline.label }}
+                                </label>
+                                {{ form.application_deadline }}
+                                {{ form.application_deadline.errors }}
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label class="form-label">
+                                    {{ form.description.label }}
+                                </label>
+                                {{ form.description }}
+                                {{ form.description.errors }}
+                            </div>
+
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <a
+                                href="{% url 'recruiter-dashboard' %}"
+                                class="btn btn-outline-secondary">
+
+                                Cancel
+
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                Create Job
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
 
         </div>
 

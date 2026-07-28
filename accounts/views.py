@@ -29,12 +29,20 @@ logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
+from django.views.generic import TemplateView
+
 
 class RegistrationSuccessView(TemplateView):
-    """Registration successful page."""
-
     template_name = "accounts/registration_success.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["email"] = self.request.session.get(
+            "verification_email"
+        )
+
+        return context
 
 def send_verification_email(user):
     """Send an email verification link to the user."""
