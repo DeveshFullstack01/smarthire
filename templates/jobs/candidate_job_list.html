@@ -1,266 +1,239 @@
 {% extends "base.html" %}
 
 {% block title %}
-Available Jobs
+Find Jobs
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .jobs-hero {
+        background: linear-gradient(135deg, #1f2a66 0%, #2d3a8c 55%, #4f6ef7 100%);
+        border-radius: 18px;
+        color: #fff;
+        padding: 3rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .jobs-hero h1 {
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+    .search-bar {
+        background: #fff;
+        border-radius: 14px;
+        padding: 0.6rem;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    .search-bar .form-control {
+        border: none;
+        box-shadow: none;
+    }
+    .search-bar .form-control:focus {
+        box-shadow: none;
+    }
+    .job-card {
+        border: 1px solid #eef0f5;
+        border-radius: 16px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        height: 100%;
+    }
+    .job-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(31,42,102,0.12);
+        border-color: #d7dcf0;
+    }
+    .company-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #4f6ef7, #2d3a8c);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .job-meta {
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+    .job-meta i {
+        color: #4f6ef7;
+        width: 16px;
+    }
+    .job-type-chip {
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+        background: #eef2ff;
+        color: #3346b3;
+    }
+    .salary-tag {
+        font-weight: 700;
+        color: #198754;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container">
 
-    <div class="text-center mb-5">
-
-        <h2 class="fw-bold">
-            Find Your Dream Job
-        </h2>
-
-        <p class="text-muted">
-            Browse the latest opportunities from top recruiters.
+    <!-- Hero + search -->
+    <div class="jobs-hero text-center">
+        <h1 class="mb-2">Find Your Next Opportunity</h1>
+        <p class="mb-4 opacity-75">
+            {{ page_obj.paginator.count }} open role{{ page_obj.paginator.count|pluralize }}
+            from top companies
         </p>
 
+        <form method="GET" class="row g-2 justify-content-center">
+            <div class="col-12 col-lg-9">
+                <div class="search-bar d-flex flex-column flex-md-row gap-2">
+                    <div class="input-group flex-grow-1">
+                        <span class="input-group-text bg-white border-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" name="search" value="{{ search }}"
+                               class="form-control"
+                               placeholder="Job title, company or skill">
+                    </div>
+                    <div class="input-group flex-grow-1">
+                        <span class="input-group-text bg-white border-0">
+                            <i class="bi bi-geo-alt text-muted"></i>
+                        </span>
+                        <input type="text" name="location" value="{{ location }}"
+                               class="form-control"
+                               placeholder="Location">
+                    </div>
+                    <button type="submit" class="btn btn-primary px-4">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 
-    <!-- Search -->
+    <!-- active filters -->
+    {% if search or location %}
+    <div class="mb-3">
+        <span class="text-muted small me-2">Filtering:</span>
+        {% if search %}
+        <span class="badge bg-light text-dark border me-1">
+            "{{ search }}"
+        </span>
+        {% endif %}
+        {% if location %}
+        <span class="badge bg-light text-dark border me-1">
+            <i class="bi bi-geo-alt"></i> {{ location }}
+        </span>
+        {% endif %}
+        <a href="{% url 'candidate-job-list' %}" class="small text-decoration-none">
+            Clear
+        </a>
+    </div>
+    {% endif %}
 
-    <form method="GET" class="row g-3 mb-5">
-
-        <div class="col-md-10">
-
-            <input
-                type="text"
-                name="search"
-                value="{{ search }}"
-                class="form-control"
-                placeholder="Search by Job Title, Company or Skill">
-
-        </div>
-
-        <div class="col-md-2 d-grid">
-
-            <button
-                type="submit"
-                class="btn btn-primary">
-
-                Search
-
-            </button>
-
-        </div>
-
-    </form>
-
-    <div class="row">
+    <!-- job grid -->
+    <div class="row g-4">
 
         {% for job in jobs %}
+        <div class="col-md-6 col-xl-4">
+            <div class="job-card p-4 d-flex flex-column">
 
-        <div class="col-lg-6 mb-4">
-
-            <div class="card shadow-sm border-0 h-100">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between">
-
-                        <div>
-
-                            <h4 class="mb-2">
-
-                                {{ job.title }}
-
-                            </h4>
-
-                            <h6 class="text-primary">
-
-                                {{ job.company.name }}
-
-                            </h6>
-
-                        </div>
-
-                        <div>
-
-                            <span class="badge bg-success">
-
-                                {{ job.status }}
-
-                            </span>
-
-                        </div>
-
+                <div class="d-flex align-items-start gap-3 mb-3">
+                    <div class="company-avatar">
+                        {{ job.company.name|first|upper }}
                     </div>
-
-                    <hr>
-
-                    <div class="row">
-
-                        <div class="col-6 mb-2">
-
-                            <strong>📍 Location</strong>
-
-                            <br>
-
-                            {{ job.location }}
-
+                    <div class="flex-grow-1 min-width-0">
+                        <h5 class="mb-1 text-truncate">{{ job.title }}</h5>
+                        <div class="text-primary small fw-semibold">
+                            {{ job.company.name }}
                         </div>
-
-                        <div class="col-6 mb-2">
-
-                            <strong>💼 Job Type</strong>
-
-                            <br>
-
-                            {{ job.job_type }}
-
-                        </div>
-
-                        <div class="col-6 mb-2">
-
-                            <strong>💰 Salary</strong>
-
-                            <br>
-
-                            ₹{{ job.salary }}
-
-                        </div>
-
-                        <div class="col-6 mb-2">
-
-                            <strong>⭐ Experience</strong>
-
-                            <br>
-
-                            {{ job.experience }} Years
-
-                        </div>
-
-                        <div class="col-6">
-
-                            <strong>👥 Vacancies</strong>
-
-                            <br>
-
-                            {{ job.vacancies }}
-
-                        </div>
-
-                        <div class="col-6">
-
-                            <strong>📅 Deadline</strong>
-
-                            <br>
-
-                            {{ job.application_deadline|date:"d M Y" }}
-
-                        </div>
-
                     </div>
-
                 </div>
 
-                <div class="card-footer bg-white border-0">
+                <div class="mb-3">
+                    <span class="job-type-chip">{{ job.get_job_type_display }}</span>
+                </div>
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <div class="d-flex flex-column gap-2 mb-3 job-meta flex-grow-1">
+                    <span><i class="bi bi-geo-alt"></i> {{ job.location }}</span>
+                    <span><i class="bi bi-briefcase"></i>
+                        {{ job.experience }} yr{{ job.experience|pluralize }} experience</span>
+                    <span><i class="bi bi-people"></i>
+                        {{ job.vacancies }} vacanc{{ job.vacancies|pluralize:"y,ies" }}</span>
+                    <span><i class="bi bi-calendar-event"></i>
+                        Closes {{ job.application_deadline|date:"d M Y" }}</span>
+                </div>
 
-                        <a
-                            href="{% url 'job-detail' job.id %}"
-                            class="btn btn-outline-primary">
-
-                            View Details
-
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                    <span class="salary-tag">₹{{ job.salary }}</span>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'job-detail' job.id %}"
+                           class="btn btn-sm btn-outline-primary">
+                            Details
                         </a>
-
-                        <a
-                            href="{% url 'apply-job' job.id %}"
-                            class="btn btn-success">
-
-                            Apply Now
-
+                        <a href="{% url 'apply-job' job.id %}"
+                           class="btn btn-sm btn-primary">
+                            Apply
                         </a>
-
                     </div>
-
                 </div>
 
             </div>
-
         </div>
 
         {% empty %}
-
         <div class="col-12">
-
-            <div class="alert alert-info text-center">
-
-                <h4>No Jobs Found</h4>
-
-                <p>
-                    Try searching with different keywords.
+            <div class="text-center py-5">
+                <i class="bi bi-search fs-1 text-muted d-block mb-3"></i>
+                <h4>No jobs found</h4>
+                <p class="text-muted">
+                    Try different keywords or clear your filters.
                 </p>
-
+                {% if search or location %}
+                <a href="{% url 'candidate-job-list' %}" class="btn btn-outline-primary">
+                    Clear filters
+                </a>
+                {% endif %}
             </div>
-
         </div>
-
         {% endfor %}
 
     </div>
 
+    <!-- pagination -->
     {% if page_obj.has_other_pages %}
-
-    <nav class="mt-4">
-
+    <nav class="mt-5">
         <ul class="pagination justify-content-center">
-
             {% if page_obj.has_previous %}
-
-                <li class="page-item">
-
-                    <a
-                        class="page-link"
-                        href="?page={{ page_obj.previous_page_number }}&search={{ search }}">
-
-                        Previous
-
-                    </a>
-
-                </li>
-
-            {% endif %}
-
-            <li class="page-item active">
-
-                <span class="page-link">
-
-                    {{ page_obj.number }}
-
-                    /
-
-                    {{ page_obj.paginator.num_pages }}
-
-                </span>
-
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.previous_page_number }}&search={{ search }}&location={{ location }}">
+                    Previous
+                </a>
             </li>
-
-            {% if page_obj.has_next %}
-
-                <li class="page-item">
-
-                    <a
-                        class="page-link"
-                        href="?page={{ page_obj.next_page_number }}&search={{ search }}">
-
-                        Next
-
-                    </a>
-
-                </li>
-
             {% endif %}
-
+            <li class="page-item active">
+                <span class="page-link">
+                    {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                </span>
+            </li>
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.next_page_number }}&search={{ search }}&location={{ location }}">
+                    Next
+                </a>
+            </li>
+            {% endif %}
         </ul>
-
     </nav>
-
     {% endif %}
 
 </div>

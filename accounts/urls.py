@@ -7,12 +7,15 @@ from .views import (
     VerifyEmailView,
     CustomTokenObtainPairView,
     ResendVerificationView,
+    RegistrationSuccessView,
 )
 from .web_views import (
     login_page,
     logout_page,
     admin_dashboard,
     candidate_dashboard,
+    recruiter_signup_page,
+    candidate_signup_page,
 )
 
 from .profile_views import (
@@ -55,6 +58,13 @@ urlpatterns = [
     # Authentication APIs
     # ==========================
     path(
+    "web/registration-success/",
+    RegistrationSuccessView.as_view(),
+    name="registration-success",
+    ),
+    
+    
+    path(
         "signup/candidate/",
         CandidateSignupView.as_view(),
         name="candidate-signup",
@@ -93,6 +103,17 @@ urlpatterns = [
      path("web/candidate/profile/skill/add/", add_skill, name="add-skill"),
      path("web/candidate/profile/skill/<int:skill_id>/delete/", delete_skill, name="delete-skill"),
      path("web/candidate/profile/", my_profile, name="my-profile"),
+     
+    path(
+        "web/signup/candidate/",
+        candidate_signup_page,
+        name="web-candidate-signup",
+    ),
+    path(
+        "web/signup/recruiter/",
+        recruiter_signup_page,
+        name="web-recruiter-signup",
+    ), 
      
 ]
     

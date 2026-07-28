@@ -9,6 +9,82 @@ from accounts.decorators import role_required
 from jobs.models import Job
 
 from .models import User
+# ==================================================
+# Web signup pages (styled HTML forms)
+# ==================================================
+
+from .serializers import CandidateSignupSerializer, RecruiterSignupSerializer
+
+
+def _render_signup_errors(request, template, serializer):
+    """Flash the first error from each field so the HTML form can show them."""
+    for field, errors in serializer.errors.items():
+        label = field.replace("_", " ").title()
+        messages.error(request, f"{label}: {errors[0]}")
+    return render(request, template)
+
+
+def candidate_signup_page(request):
+    if request.user.is_authenticated:
+        return redirect_user(request.user)
+
+    if request.method == "POST":
+        serializer = CandidateSignupSerializer(
+            data={
+                "username": request.POST.get("username", ""),
+                "email": request.POST.get("email", ""),
+                "password": request.POST.get("password", ""),
+            }
+        )
+
+        if serializer.is_valid():
+            from .views import send_verification_email
+            user = serializer.save()
+            send_verification_email(user)
+            logger.info("Candidate signed up via web. user_id=%s", user.id)
+            messages.success(
+                request,
+                "Account created. Check your email to verify, then log in.",
+            )
+            return redirect("registration-success")
+
+        return _render_signup_errors(
+            request, "accounts/candidate_signup.html", serializer
+        )
+
+    return render(request, "accounts/candidate_signup.html")
+
+
+def recruiter_signup_page(request):
+    if request.user.is_authenticated:
+        return redirect_user(request.user)
+
+    if request.method == "POST":
+        serializer = RecruiterSignupSerializer(
+            data={
+                "username": request.POST.get("username", ""),
+                "email": request.POST.get("email", ""),
+                "password": request.POST.get("password", ""),
+                "company_name": request.POST.get("company_name", ""),
+            }
+        )
+
+        if serializer.is_valid():
+            from .views import send_verification_email
+            user = serializer.save()
+            send_verification_email(user)
+            logger.info("Recruiter signed up via web. user_id=%s", user.id)
+            messages.success(
+                request,
+                "Account created. Check your email to verify, then log in.",
+            )
+            return redirect("registration-success")
+
+        return _render_signup_errors(
+            request, "accounts/recruiter_signup.html", serializer
+        )
+
+    return render(request, "accounts/recruiter_signup.html")
 
 logger = logging.getLogger(__name__)
 
@@ -85,15 +161,6 @@ def admin_dashboard(request):
         context,
     )
 
-@login_required
-@role_required(User.Role.CANDIDATE)
-def candidate_dashboard(request):
-
-    return render(
-        request,
-        "candidate/dashboard.html",
-    )
-    
 @login_required
 @role_required(User.Role.CANDIDATE)
 def candidate_dashboard(request):

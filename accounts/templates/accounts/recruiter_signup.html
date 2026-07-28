@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Recruiter Sign Up{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-wrap { min-height: 78vh; display:flex; align-items:center; justify-content:center; }
+    .auth-card { width:100%; max-width:460px; border:none; border-radius:18px;
+        overflow:hidden; box-shadow:0 20px 60px rgba(31,42,102,0.18); }
+    .auth-head { background:linear-gradient(135deg,#0f5132,#198754); color:#fff;
+        padding:2rem; text-align:center; }
+    .auth-head .icon { width:64px;height:64px;border-radius:50%;background:#fff;
+        color:#198754;display:flex;align-items:center;justify-content:center;
+        font-size:1.6rem;margin:0 auto 1rem; }
+    .auth-body { padding:2rem; background:#fff; }
+    .auth-switch { font-size:0.9rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+    <div class="card auth-card">
+        <div class="auth-head">
+            <div class="icon"><i class="bi bi-building-fill-add"></i></div>
+            <h3 class="mb-1">Recruiter sign up</h3>
+            <p class="mb-0 opacity-75">Post jobs and hire top talent</p>
+        </div>
+        <div class="auth-body">
+
+            <form method="post" action="{% url 'web-recruiter-signup' %}">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Company Name</label>
+                    <input type="text" name="company_name" class="form-control"
+                           value="{{ request.POST.company_name }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control"
+                           value="{{ request.POST.username }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control"
+                           value="{{ request.POST.email }}" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" required>
+                    <div class="form-text">At least 8 characters.</div>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 py-2">
+                    Sign Up as Recruiter
+                </button>
+            </form>
+
+            <hr class="my-4">
+
+            <div class="text-center auth-switch">
+                <div class="mb-2">
+                    Already have an account?
+                    <a href="{% url 'web-login' %}">Log in</a>
+                </div>
+                <div class="text-muted">
+                    Looking for a job?
+                    <a href="{% url 'web-candidate-signup' %}">Sign up as candidate</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

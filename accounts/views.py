@@ -3,11 +3,14 @@ import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import (
     urlsafe_base64_decode,
     urlsafe_base64_encode,
 )
+from django.views.generic import TemplateView
 
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
@@ -27,6 +30,12 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
+class RegistrationSuccessView(TemplateView):
+    """Registration successful page."""
+
+    template_name = "accounts/registration_success.html"
+
+
 def send_verification_email(user):
     """Send an email verification link to the user."""
 
@@ -35,6 +44,8 @@ def send_verification_email(user):
         user.id,
     )
 
+    user.refresh_from_db()
+
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = email_verification_token.make_token(user)
 
@@ -42,11 +53,22 @@ def send_verification_email(user):
         f"{settings.FRONTEND_URL}/api/accounts/verify-email/{uid}/{token}/"
     )
 
+    # DEBUG (Remove later)
+    print("\n" + "=" * 80)
+    print("USERNAME :", user.username)
+    print("USER ID  :", user.pk)
+    print("VERIFIED :", user.is_verified)
+    print("UID      :", uid)
+    print("TOKEN    :", token)
+    print("VERIFY URL:")
+    print(verify_url)
+    print("=" * 80 + "\n")
+
     send_mail(
         subject="Verify your SmartHire account",
         message=(
             f"Hi {user.username},\n\n"
-            f"Click the link below to verify your account:\n"
+            f"Click the link below to verify your account:\n\n"
             f"{verify_url}"
         ),
         from_email=settings.DEFAULT_FROM_EMAIL,
@@ -60,12 +82,15 @@ def send_verification_email(user):
 
 
 class CandidateSignupView(generics.CreateAPIView):
-    """Register a new candidate account."""
+    """Register a new candidate."""
 
     serializer_class = CandidateSignupSerializer
     permission_classes = [permissions.AllowAny]
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         logger.info("Creating candidate account.")
 
         user = serializer.save()
@@ -77,14 +102,19 @@ class CandidateSignupView(generics.CreateAPIView):
 
         send_verification_email(user)
 
+        return redirect(reverse("registration-success"))
+
 
 class RecruiterSignupView(generics.CreateAPIView):
-    """Register a new recruiter account."""
+    """Register a new recruiter."""
 
     serializer_class = RecruiterSignupSerializer
     permission_classes = [permissions.AllowAny]
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         logger.info("Creating recruiter account.")
 
         user = serializer.save()
@@ -96,9 +126,11 @@ class RecruiterSignupView(generics.CreateAPIView):
 
         send_verification_email(user)
 
+        return redirect(reverse("registration-success"))
+
 
 class VerifyEmailView(APIView):
-    """Verify a user's email address."""
+    """Verify a user's email."""
 
     permission_classes = [permissions.AllowAny]
 
@@ -109,26 +141,41 @@ class VerifyEmailView(APIView):
             uid = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=uid)
 
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            logger.warning("Invalid email verification link.")
+        except (
+            TypeError,
+            ValueError,
+            OverflowError,
+            User.DoesNotExist,
+        ):
+            logger.warning("Invalid verification link.")
 
-            return Response(
-                {"error": "Invalid verification link."},
-                status=status.HTTP_400_BAD_REQUEST,
+            return render(
+                request,
+                "accounts/email_verification_failed.html",
+                {
+                    "title": "Invalid Verification Link",
+                    "message": (
+                        "The verification link is invalid. "
+                        "Please request a new verification email."
+                    ),
+                },
+                status=400,
             )
 
         if email_verification_token.check_token(user, token):
-            user.is_verified = True
-            user.save(update_fields=["is_verified"])
+
+            if not user.is_verified:
+                user.is_verified = True
+                user.save(update_fields=["is_verified"])
 
             logger.info(
                 "Email verified successfully for user_id=%s",
                 user.id,
             )
 
-            return Response(
-                {"message": "Email verified successfully."},
-                status=status.HTTP_200_OK,
+            return render(
+                request,
+                "accounts/email_verified.html",
             )
 
         logger.warning(
@@ -136,14 +183,21 @@ class VerifyEmailView(APIView):
             user.id,
         )
 
-        return Response(
-            {"error": "Verification link is invalid or has expired."},
-            status=status.HTTP_400_BAD_REQUEST,
+        return render(
+            request,
+            "accounts/email_verification_failed.html",
+            {
+                "title": "Verification Link Expired",
+                "message": (
+                    "This verification link has expired or is no longer valid."
+                ),
+            },
+            status=400,
         )
 
 
 class ResendVerificationView(APIView):
-    """Resend the email verification link."""
+    """Resend verification email."""
 
     permission_classes = [permissions.AllowAny]
 
@@ -190,6 +244,6 @@ class ResendVerificationView(APIView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    """Authenticate a user and issue JWT access/refresh tokens."""
+    """Authenticate a user and issue JWT tokens."""
 
     serializer_class = CustomTokenObtainPairSerializer
