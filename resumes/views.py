@@ -4,7 +4,6 @@ import mimetypes
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
-from django.http import Http404
 from ai_engine.services import calculate_match_score
 from applicants.models import Application
 from django.http import FileResponse, Http404

@@ -25,11 +25,9 @@ from .serializers import (
 )
 from .tokens import email_verification_token
 
-logger = logging.getLogger(__name__)
 
 User = get_user_model()
-
-from django.views.generic import TemplateView
+logger = logging.getLogger(__name__)
 
 
 class RegistrationSuccessView(TemplateView):
