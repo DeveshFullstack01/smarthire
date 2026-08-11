@@ -1,41 +1,42 @@
+import asyncio
 import logging
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils.timezone import localtime
 
 from .models import Notification
 
 logger = logging.getLogger(__name__)
 
 
-def notify(recipient, message, url="", email_subject=None):
+def notify(
+    recipient,
+    message,
+    url="",
+    email_subject=None,
+):
     """
-    Create one in-app notification for a user, and optionally email them.
-
-    This is the ONLY place notifications are created, so every channel
-    (in-app now, email here, push later) lives in one function.
-
-    Args:
-        recipient:     the User to notify.
-        message:       short one-line text (max 255 chars).
-        url:           optional internal path to open on click.
-        email_subject: if given, also send an email with this subject.
-                       If None, no email is sent (in-app only).
-
-    Returns:
-        The created Notification, or None if the in-app row failed.
+    Create an in-app notification,
+    optionally send an email,
+    and push a real-time WebSocket event.
     """
+
     try:
         notification = Notification.objects.create(
             recipient=recipient,
             message=message[:255],
             url=url,
         )
+
         logger.info(
             "Notification created. recipient_id=%s notification_id=%s",
             recipient.id,
             notification.id,
         )
+
     except Exception:
         logger.exception(
             "Failed to create notification. recipient_id=%s",
@@ -43,23 +44,82 @@ def notify(recipient, message, url="", email_subject=None):
         )
         return None
 
-    # Email is a best-effort second channel. A mail failure must never
-    # undo the in-app notification, so it gets its own try/except and we
-    # still return the notification that was successfully created.
-    if email_subject and getattr(recipient, "email", ""):
-        _send_email(recipient, email_subject, message, url)
+    # ----------------------------
+    # Email
+    # ----------------------------
+
+    if email_subject and recipient.email:
+        _send_email(
+            recipient,
+            email_subject,
+            message,
+            url,
+        )
+
+    # ----------------------------
+    # Live WebSocket Notification
+    # ----------------------------
+
+    _send_websocket_notification(notification)
 
     return notification
 
 
-def _send_email(recipient, subject, message, url):
-    """Send a plain-text notification email. Swallows and logs failures."""
+def _send_websocket_notification(notification):
+    """
+    Push a notification to every browser
+    connected for this user.
+    """
+
+    try:
+        channel_layer = get_channel_layer()
+
+        async_to_sync(
+            channel_layer.group_send
+        )(
+            f"user_{notification.recipient.id}",
+            {
+                "type": "send_notification",
+                "message": notification.message,
+                "url": notification.url,
+                "created_at": localtime(
+                    notification.created_at
+                ).strftime("%d %b %Y %I:%M %p"),
+            },
+        )
+
+        logger.info(
+            "Live notification sent. notification_id=%s",
+            notification.id,
+        )
+
+    except Exception:
+        logger.exception(
+            "Failed to send live notification. notification_id=%s",
+            notification.id,
+        )
+
+
+def _send_email(
+    recipient,
+    subject,
+    message,
+    url,
+):
+    """
+    Send notification email.
+    """
+
     body = message
 
     if url:
-        body = f"{message}\n\n{settings.FRONTEND_URL}{url}"
+        body = (
+            f"{message}\n\n"
+            f"{settings.FRONTEND_URL}{url}"
+        )
 
     try:
+
         send_mail(
             subject=subject,
             message=body,
@@ -67,27 +127,34 @@ def _send_email(recipient, subject, message, url):
             recipient_list=[recipient.email],
             fail_silently=False,
         )
+
         logger.info(
             "Notification email sent. recipient_id=%s",
             recipient.id,
         )
+
     except Exception:
         logger.exception(
-            "Failed to send notification email. recipient_id=%s",
+            "Failed to send email notification. recipient_id=%s",
             recipient.id,
         )
 
 
 def mark_all_read(user):
-    """Mark every unread notification for this user as read. Returns the count."""
+    """
+    Mark all notifications as read.
+    """
+
     updated = (
         user.notifications
         .filter(is_read=False)
         .update(is_read=True)
     )
+
     logger.info(
         "Marked notifications read. user_id=%s count=%s",
         user.id,
         updated,
     )
+
     return updated

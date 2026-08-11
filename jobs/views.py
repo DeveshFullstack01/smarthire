@@ -7,7 +7,7 @@ from accounts.models import User
 
 from .forms import JobForm
 from .models import Company
-
+from django.shortcuts import get_object_or_404
 
 @login_required
 @role_required(User.Role.RECRUITER)
@@ -15,10 +15,10 @@ def create_job(request):
     """
     Allow recruiters to create a new job.
     """
-
-    company = Company.objects.filter(
-        owner=request.user
-    ).first()
+    company = get_object_or_404(
+        Company,
+        owner=request.user,
+    )
 
     if company is None:
         messages.error(

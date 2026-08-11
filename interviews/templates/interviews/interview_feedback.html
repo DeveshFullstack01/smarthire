@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}
+Interview Feedback
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-success text-white">
+
+            <h3 class="mb-0">
+
+                Interview Feedback
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="mb-4">
+
+                <h5>
+
+                    Candidate Information
+
+                </h5>
+
+                <table class="table table-bordered">
+
+                    <tr>
+
+                        <th width="200">
+                            Candidate
+                        </th>
+
+                        <td>
+                            {{ interview.application.candidate.get_full_name|default:interview.application.candidate.username }}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <td>
+                            {{ interview.application.candidate.email }}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>
+                            Job
+                        </th>
+
+                        <td>
+                            {{ interview.application.job.title }}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>
+                            Interview Round
+                        </th>
+
+                        <td>
+                            {{ interview.interview_round }}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>
+                            Interviewer
+                        </th>
+
+                        <td>
+                            {{ interview.interviewer_name }}
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            </div>
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+
+                    <div class="alert alert-danger">
+
+                        {{ form.non_field_errors }}
+
+                    </div>
+
+                {% endif %}
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+
+                            Technical Rating
+
+                        </label>
+
+                        {{ form.technical_rating }}
+
+                        <div class="text-danger small">
+
+                            {{ form.technical_rating.errors }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+
+                            Communication Rating
+
+                        </label>
+
+                        {{ form.communication_rating }}
+
+                        <div class="text-danger small">
+
+                            {{ form.communication_rating.errors }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+
+                            Problem Solving Rating
+
+                        </label>
+
+                        {{ form.problem_solving_rating }}
+
+                        <div class="text-danger small">
+
+                            {{ form.problem_solving_rating.errors }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+
+                            Recommendation
+
+                        </label>
+
+                        {{ form.recommendation }}
+
+                        <div class="text-danger small">
+
+                            {{ form.recommendation.errors }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-12 mb-3">
+
+                        <label class="form-label">
+
+                            Recruiter Feedback
+
+                        </label>
+
+                        {{ form.feedback }}
+
+                        <div class="text-danger small">
+
+                            {{ form.feedback.errors }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a
+                        href="{% url 'recruiter-interviews' %}"
+                        class="btn btn-secondary">
+
+                        Cancel
+
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-success">
+
+                        Complete Interview
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

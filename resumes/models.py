@@ -27,6 +27,9 @@ class Resume(models.Model):
         auto_now=True,
     )
 
+    class Meta:
+        ordering = ["-uploaded_at"]
+
     def __str__(self):
         return (
             f"{self.application.candidate.username} - "

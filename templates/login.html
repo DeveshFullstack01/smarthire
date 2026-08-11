@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}
 Login | SmartHire ATS
@@ -7,12 +8,22 @@ Login | SmartHire ATS
 {% block content %}
 
 <style>
+
 body{
-    background: linear-gradient(135deg,#0d6efd,#6610f2);
+    font-family:'Poppins',sans-serif;
+    background:linear-gradient(-45deg,#2563eb,#4f46e5,#1d4ed8,#0f172a);
+    background-size:400% 400%;
+    animation:bgAnimation 12s ease infinite;
 }
 
-.login-container{
-    min-height:85vh;
+@keyframes bgAnimation{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+.login-wrapper{
+    min-height:90vh;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -20,43 +31,61 @@ body{
 
 .login-card{
     width:100%;
-    max-width:460px;
-    border:none;
-    border-radius:18px;
+    max-width:1100px;
+    border-radius:24px;
     overflow:hidden;
-    background:white;
-    box-shadow:0 15px 40px rgba(0,0,0,.25);
-    animation:fadeIn .7s ease;
+    background:rgba(255,255,255,.12);
+    backdrop-filter:blur(18px);
+    box-shadow:0 20px 50px rgba(0,0,0,.30);
 }
 
-.login-header{
-    background:linear-gradient(135deg,#0d6efd,#4f46e5);
+.left-side{
     color:white;
-    padding:30px;
-    text-align:center;
+    padding:60px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    background:linear-gradient(135deg,#2563eb,#1e3a8a);
 }
 
-.login-header h2{
+.left-side h1{
+    font-size:46px;
     font-weight:700;
 }
 
-.login-header p{
-    margin-top:8px;
+.left-side p{
+    margin-top:20px;
+    font-size:18px;
     opacity:.9;
 }
 
-.card-body{
-    padding:35px;
+.right-side{
+    background:white;
+    padding:50px;
+}
+
+.logo-circle{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    background:#2563eb;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:34px;
+    margin:auto;
+    margin-bottom:20px;
 }
 
 .form-control{
-    height:50px;
-    border-radius:10px;
+    height:54px;
+    border-radius:12px;
 }
 
 .form-control:focus{
     box-shadow:none;
-    border-color:#0d6efd;
+    border-color:#2563eb;
 }
 
 .input-group-text{
@@ -65,201 +94,206 @@ body{
 }
 
 .btn-login{
-    height:50px;
-    border-radius:10px;
+    height:54px;
+    border-radius:12px;
     font-weight:600;
-    font-size:17px;
     transition:.3s;
 }
 
 .btn-login:hover{
     transform:translateY(-2px);
-    box-shadow:0 10px 20px rgba(13,110,253,.3);
 }
 
-.extra-links a{
-    text-decoration:none;
-    font-size:14px;
+@media(max-width:991px){
+
+.left-side{
+display:none;
 }
 
-.extra-links a:hover{
-    text-decoration:underline;
+.right-side{
+padding:35px;
 }
 
-.logo-circle{
-    width:75px;
-    height:75px;
-    border-radius:50%;
-    background:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    margin:auto;
-    margin-bottom:15px;
-    font-size:35px;
 }
 
-.alert{
-    border-radius:10px;
-}
-
-@keyframes fadeIn{
-    from{
-        opacity:0;
-        transform:translateY(20px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
 </style>
 
-<div class="container login-container">
+<div class="container login-wrapper">
 
-    <div class="login-card">
+<div class="login-card">
 
-        <div class="login-header">
+<div class="row g-0">
 
-            <div class="logo-circle">
-                💼
-            </div>
+<div class="col-lg-6 left-side">
 
-            <h2>SmartHire ATS</h2>
+<h1>SmartHire ATS</h1>
 
-            <p>
-                Welcome Back! Please login to continue.
-            </p>
+<p>
 
-        </div>
+AI Powered Recruitment Platform
 
-        <div class="card-body">
+</p>
 
-            {% if messages %}
-                {% for message in messages %}
+<hr>
 
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+<h5>✔ AI Resume Matching</h5>
 
-                        {{ message }}
+<h5>✔ Recruiter Dashboard</h5>
 
-                        <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="alert">
-                        </button>
+<h5>✔ Resume Analytics</h5>
 
-                    </div>
+<h5>✔ Interview Scheduling</h5>
 
-                {% endfor %}
-            {% endif %}
+</div>
 
-            <form method="POST">
+<div class="col-lg-6 right-side">
 
-                {% csrf_token %}
+<div class="logo-circle">
 
-                <div class="mb-4">
+<i class="bi bi-briefcase-fill"></i>
 
-                    <label class="form-label fw-semibold">
-                        Username
-                    </label>
+</div>
 
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="username"
-                        placeholder="Enter your username"
-                        required>
+<h3 class="text-center fw-bold">
 
-                </div>
+Welcome Back
 
-                <div class="mb-3">
+</h3>
 
-                    <label class="form-label fw-semibold">
-                        Password
-                    </label>
+<p class="text-center text-muted mb-4">
 
-                    <div class="input-group">
+Login to continue
 
-                        <input
-                            type="password"
-                            id="password"
-                            class="form-control"
-                            name="password"
-                            placeholder="Enter your password"
-                            required>
+</p>
 
-                        <span
-                            class="input-group-text"
-                            onclick="togglePassword()">
+<form method="POST" id="loginForm">
 
-                            👁
+{% csrf_token %}
 
-                        </span>
+<div class="mb-3">
 
-                    </div>
+<label class="form-label">Username</label>
 
-                </div>
+<input
+type="text"
+class="form-control"
+name="username"
+placeholder="Enter username"
+required>
 
-                <div class="d-flex justify-content-between align-items-center mb-4">
+</div>
 
-                    <div class="form-check">
+<div class="mb-3">
 
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="remember">
+<label class="form-label">
 
-                        <label
-                            class="form-check-label"
-                            for="remember">
+Password
 
-                            Remember Me
+</label>
 
-                        </label>
+<div class="input-group">
 
-                    </div>
+<input
+type="password"
+id="password"
+class="form-control"
+name="password"
+placeholder="Enter password"
+required>
 
-                    <a href="#" class="text-decoration-none">
-                        Forgot Password?
-                    </a>
+<button
+class="input-group-text"
+type="button"
+onclick="togglePassword()">
 
-                </div>
+<i id="eyeIcon" class="bi bi-eye"></i>
 
-                <button
-                    type="submit"
-                    class="btn btn-primary w-100 btn-login">
+</button>
 
-                    Login
+</div>
 
-                </button>
+</div>
 
-            </form>
+<div class="d-flex justify-content-between mb-4">
 
-            <hr class="my-4">
+<div class="form-check">
 
-            <div class="text-center extra-links">
+<input
+class="form-check-input"
+type="checkbox"
+id="remember">
 
-                <p class="mb-2">
+<label
+class="form-check-label"
+for="remember">
 
-                    Don't have an account?
+Remember Me
 
-                </p>
+</label>
 
-                <a href="{% url 'candidate-signup' %}">
-                    Candidate Register
-                </a>
+</div>
 
-                |
+<a href="#">
 
-                <a href="{% url 'recruiter-signup' %}">
-                    Recruiter Register
-                </a>
+Forgot Password?
 
-            </div>
+</a>
 
-        </div>
+</div>
 
-    </div>
+<button
+id="loginBtn"
+class="btn btn-primary btn-login w-100">
+
+<span id="btnText">
+
+Login
+
+</span>
+
+<span
+id="spinner"
+class="spinner-border spinner-border-sm d-none">
+
+</span>
+
+</button>
+
+</form>
+
+<hr>
+
+<div class="text-center">
+
+<p>
+
+Don't have an account?
+
+</p>
+
+<a
+href="{% url 'web-candidate-signup' %}"
+class="btn btn-outline-primary btn-sm">
+
+Candidate
+
+</a>
+
+<a
+href="{% url 'web-recruiter-signup' %}"
+class="btn btn-outline-dark btn-sm">
+
+Recruiter
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 </div>
 
@@ -267,16 +301,31 @@ body{
 
 function togglePassword(){
 
-    const password=document.getElementById("password");
+const password=document.getElementById("password");
+const eye=document.getElementById("eyeIcon");
 
-    if(password.type==="password"){
-        password.type="text";
-    }
-    else{
-        password.type="password";
-    }
+if(password.type==="password"){
+
+password.type="text";
+eye.classList.remove("bi-eye");
+eye.classList.add("bi-eye-slash");
+
+}else{
+
+password.type="password";
+eye.classList.remove("bi-eye-slash");
+eye.classList.add("bi-eye");
 
 }
+
+}
+
+document.getElementById("loginForm").addEventListener("submit",function(){
+
+document.getElementById("btnText").innerHTML="Signing In...";
+document.getElementById("spinner").classList.remove("d-none");
+
+});
 
 </script>
 

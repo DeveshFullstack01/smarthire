@@ -1,0 +1,408 @@
+{% extends "base.html" %}
+
+{% block title %}
+Employee Onboarding | SmartHire ATS
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <!-- ================================================= -->
+    <!-- Header -->
+    <!-- ================================================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                Employee Onboarding
+            </h2>
+
+            <p class="text-muted mb-0">
+                Manage approved candidates and complete employee onboarding.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- Statistics -->
+    <!-- ================================================= -->
+
+    <div class="row g-4 mb-4">
+
+        <!-- Total -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Total Onboarding
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        {{ onboardings|length }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Pending -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Pending
+                    </h6>
+
+                    <h2 class="text-warning">
+                        {{ pending_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Completed -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Completed
+                    </h6>
+
+                    <h2 class="text-success">
+                        {{ completed_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Rejected -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Rejected
+                    </h6>
+
+                    <h2 class="text-danger">
+                        {{ rejected_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- Onboarding Table -->
+    <!-- ================================================= -->
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-primary text-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0">
+                    Employee Onboarding
+                </h5>
+
+                <span class="badge bg-light text-dark">
+                    {{ onboardings|length }} Records
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Candidate</th>
+
+                        <th>Job</th>
+
+                        <th>Designation</th>
+
+                        <th>Joining Date</th>
+
+                        <th>Status</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for onboarding in onboardings %}
+
+                    <tr>
+
+                        <!-- Candidate -->
+
+                        <td>
+
+                            <strong>
+                                {{ onboarding.candidate.get_full_name|default:onboarding.candidate.username }}
+                            </strong>
+
+                            <br>
+
+                            <small class="text-muted">
+                                {{ onboarding.candidate.email }}
+                            </small>
+
+                        </td>
+
+
+                        <!-- Job -->
+
+                        <td>
+                            {{ onboarding.offer.application.job.title }}
+                        </td>
+
+
+                        <!-- Designation -->
+
+                        <td>
+                            {{ onboarding.offer.designation }}
+                        </td>
+
+
+                        <!-- Joining Date -->
+
+                        <td>
+
+                            {% if onboarding.offer.joining_date %}
+
+                                {{ onboarding.offer.joining_date|date:"d M Y" }}
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    Not specified
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Status -->
+
+                        <td>
+
+                            {% if onboarding.status == "Completed" %}
+
+                                <span class="badge bg-success">
+                                    Completed
+                                </span>
+
+                            {% elif onboarding.status == "Rejected" %}
+
+                                <span class="badge bg-danger">
+                                    Rejected
+                                </span>
+
+                            {% elif onboarding.status == "Approved" %}
+
+                                <span class="badge bg-primary">
+                                    Approved
+                                </span>
+
+                            {% elif onboarding.status == "Under Review" %}
+
+                                <span class="badge bg-info text-dark">
+                                    Under Review
+                                </span>
+
+                            {% elif onboarding.status == "In Progress" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    In Progress
+                                </span>
+
+                            {% elif onboarding.status == "Not Started" %}
+
+                                <span class="badge bg-secondary">
+                                    Not Started
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-dark">
+                                    {{ onboarding.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Action -->
+
+                        <td>
+
+                            <div class="d-flex gap-2 align-items-center">
+
+                                <!-- ALWAYS SHOW VIEW -->
+
+                                <a
+                                    href="{% url 'admin-onboarding-detail' onboarding.id %}"
+                                    class="btn btn-outline-primary btn-sm"
+                                >
+                                    <i class="bi bi-eye me-1"></i>
+                                    View
+                                </a>
+
+
+                                <!-- COMPLETE -->
+
+                                {% if onboarding.status == "Approved" %}
+
+                                    <form
+                                        method="POST"
+                                        action="{% url 'complete-onboarding' onboarding.id %}"
+                                        class="d-inline"
+                                    >
+
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-success btn-sm"
+                                        >
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            Complete
+                                        </button>
+
+                                    </form>
+
+
+                                {% elif onboarding.status == "Completed" %}
+
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle-fill me-1"></i>
+                                        Completed
+                                    </span>
+
+
+                                {% elif onboarding.status == "Rejected" %}
+
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle-fill me-1"></i>
+                                        Rejected
+                                    </span>
+
+
+                                {% elif onboarding.status == "Under Review" %}
+
+                                    <span class="badge bg-info text-dark">
+                                        Under Review
+                                    </span>
+
+
+                                {% elif onboarding.status == "In Progress" %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        In Progress
+                                    </span>
+
+
+                                {% else %}
+
+                                    <span class="text-muted">
+                                        Pending
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="text-center py-5"
+                        >
+
+                            <i
+                                class="bi bi-person-workspace"
+                                style="font-size: 3rem;"
+                            ></i>
+
+                            <h5 class="mt-3">
+                                No Onboarding Records
+                            </h5>
+
+                            <p class="text-muted mb-0">
+                                Approved candidates will appear here.
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

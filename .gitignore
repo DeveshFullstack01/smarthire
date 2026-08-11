@@ -1,7 +1,8 @@
 .env
+.env.docker
 env/
 venv/
-__pycache__/
+**pycache**/
 *.pyc
 *.pyo
 db.sqlite3

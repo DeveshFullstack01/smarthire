@@ -1,20 +1,32 @@
 services:
+
   db:
     image: postgres:17
     container_name: smarthire_postgres
     restart: unless-stopped
+
     environment:
       POSTGRES_DB: smarthire_db
       POSTGRES_USER: smarthire_user
       POSTGRES_PASSWORD: SmartHire@123
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+
+  redis:
+    image: redis:7-alpine
+    container_name: smarthire_redis
+    restart: unless-stopped
+
+    ports:
+      - "6379:6379"
+
 
   web:
     build: .
     container_name: smarthire_django
     restart: unless-stopped
-
 
     env_file:
       - .env.docker
@@ -27,6 +39,7 @@ services:
 
     depends_on:
       - db
+      - redis
 
     healthcheck:
       test:
@@ -41,17 +54,23 @@ services:
       retries: 3
       start_period: 20s
 
+
   nginx:
     build:
       context: ./nginx
+
     container_name: smarthire_nginx
     restart: unless-stopped
+
     ports:
       - "80:80"
+
     volumes:
       - .:/app
+
     depends_on:
       - web
+
 
 volumes:
   postgres_data:

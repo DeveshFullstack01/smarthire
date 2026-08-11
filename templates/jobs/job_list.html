@@ -1,103 +1,194 @@
 {% extends "base.html" %}
 
 {% block title %}
-My Jobs
+My Jobs | SmartHire ATS
 {% endblock %}
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container py-4">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+
+                {{ message }}
+
+                <button
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+                </button>
+
+            </div>
+        {% endfor %}
+    {% endif %}
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
-            <h2 class="mb-1">My Jobs</h2>
-            <p class="text-muted mb-0">
-                Manage all your job postings
+
+            <h2 class="fw-bold mb-1">
+                My Jobs
+            </h2>
+
+            <p class="text-muted">
+                Manage all job postings
             </p>
+
         </div>
 
-        <a href="{% url 'create-job' %}" class="btn btn-primary">
-            + Create New Job
+        <a
+            href="{% url 'create-job' %}"
+            class="btn btn-primary">
+
+            + Create Job
+
         </a>
 
     </div>
 
-    {% if messages %}
-
-        {% for message in messages %}
-
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-
-        {% endfor %}
-
-    {% endif %}
-
-    <!-- Search & Filter -->
-
-    <form method="GET" class="row g-3 mb-4">
+    <div class="row mb-4">
 
         <div class="col-md-4">
 
-            <input
-                type="text"
-                name="search"
-                value="{{ search }}"
-                class="form-control"
-                placeholder="Search by Job Title">
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Jobs
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        {{ page_obj.paginator.count }}
+                    </h2>
+
+                </div>
+
+            </div>
 
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
 
-            <input
-                type="text"
-                name="location"
-                value="{{ location }}"
-                class="form-control"
-                placeholder="Filter by Location">
+            <div class="card shadow-sm border-0">
 
-        </div>
+                <div class="card-body">
 
-        <div class="col-md-3">
+                    <h6 class="text-muted">
+                        Published Jobs
+                    </h6>
 
-            <select
-                name="status"
-                class="form-select">
+                    <h2 class="text-success">
 
-                <option value="">All Status</option>
+                        {{ jobs|length }}
 
-                {% for value, label in status_choices %}
+                    </h2>
 
-                    <option
-                        value="{{ value }}"
-                        {% if status == value %}selected{% endif %}>
+                </div>
 
-                        {{ label }}
-
-                    </option>
-
-                {% endfor %}
-
-            </select>
+            </div>
 
         </div>
 
-        <div class="col-md-2 d-grid">
+        <div class="col-md-4">
 
-            <button
-                type="submit"
-                class="btn btn-primary">
+            <div class="card shadow-sm border-0">
 
-                Search
+                <div class="card-body">
 
-            </button>
+                    <h6 class="text-muted">
+                        Total Applications
+                    </h6>
+
+                    <h2 class="text-primary">
+
+                        {% for job in jobs %}
+                            {{ job.applications.count }}
+                        {% endfor %}
+
+                    </h2>
+
+                </div>
+
+            </div>
 
         </div>
 
-    </form>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <form method="GET">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <input
+                            class="form-control"
+                            name="search"
+                            value="{{ search }}"
+                            placeholder="Search jobs">
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <input
+                            class="form-control"
+                            name="location"
+                            value="{{ location }}"
+                            placeholder="Location">
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <select
+                            class="form-select"
+                            name="status">
+
+                            <option value="">
+                                All Status
+                            </option>
+
+                            {% for value,label in status_choices %}
+
+                            <option
+                                value="{{ value }}"
+                                {% if status == value %}selected{% endif %}>
+
+                                {{ label }}
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-2 d-grid">
+
+                        <button
+                            class="btn btn-primary">
+
+                            Search
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
     {% if jobs %}
 
@@ -113,12 +204,11 @@ My Jobs
 
                         <th>Job</th>
                         <th>Status</th>
+                        <th>Salary</th>
                         <th>Experience</th>
                         <th>Vacancies</th>
-                        <th>Salary</th>
-                        <th>Deadline</th>
                         <th>Applications</th>
-                        <th class="text-center">Actions</th>
+                        <th>Actions</th>
 
                     </tr>
 
@@ -132,7 +222,9 @@ My Jobs
 
                         <td>
 
-                            <strong>{{ job.title }}</strong>
+                            <strong>
+                                {{ job.title }}
+                            </strong>
 
                             <br>
 
@@ -147,36 +239,18 @@ My Jobs
                         <td>
 
                             {% if job.status == "Published" %}
-
                                 <span class="badge bg-success">
                                     Published
                                 </span>
-
                             {% elif job.status == "Draft" %}
-
                                 <span class="badge bg-secondary">
                                     Draft
                                 </span>
-
                             {% else %}
-
                                 <span class="badge bg-danger">
                                     Closed
                                 </span>
-
                             {% endif %}
-
-                        </td>
-
-                        <td>
-
-                            {{ job.experience }} Years
-
-                        </td>
-
-                        <td>
-
-                            {{ job.vacancies }}
 
                         </td>
 
@@ -188,7 +262,13 @@ My Jobs
 
                         <td>
 
-                            {{ job.application_deadline|default:"-" }}
+                            {{ job.experience }} yrs
+
+                        </td>
+
+                        <td>
+
+                            {{ job.vacancies }}
 
                         </td>
 
@@ -202,13 +282,13 @@ My Jobs
 
                         </td>
 
-                        <td class="text-center">
+                        <td>
 
-                            <div class="d-flex flex-wrap justify-content-center gap-2">
+                            <div class="btn-group">
 
                                 <a
                                     href="{% url 'job-detail' job.id %}"
-                                    class="btn btn-sm btn-outline-primary">
+                                    class="btn btn-outline-primary btn-sm">
 
                                     View
 
@@ -216,7 +296,7 @@ My Jobs
 
                                 <a
                                     href="{% url 'job-update' job.id %}"
-                                    class="btn btn-sm btn-outline-warning">
+                                    class="btn btn-outline-warning btn-sm">
 
                                     Edit
 
@@ -224,23 +304,17 @@ My Jobs
 
                                 <a
                                     href="{% url 'job-delete' job.id %}"
-                                    class="btn btn-sm btn-outline-danger">
+                                    class="btn btn-outline-danger btn-sm">
 
                                     Delete
 
                                 </a>
 
                                 <a
-                                    href="{% url 'recruiter-applications' job.id %}"
-                                    class="btn btn-sm btn-outline-success">
+                                    href="{% url 'job-applicants' job.id %}"
+                                    class="btn btn-outline-success btn-sm">
 
-                                    Applications
-
-                                    <span class="badge bg-success ms-1">
-
-                                        {{ job.applications.count }}
-
-                                    </span>
+                                    Applicants
 
                                 </a>
 
@@ -260,77 +334,31 @@ My Jobs
 
     </div>
 
-    {% if page_obj.has_other_pages %}
-
-    <nav class="mt-4">
-
-        <ul class="pagination justify-content-center">
-
-            {% if page_obj.has_previous %}
-
-                <li class="page-item">
-
-                    <a
-                        class="page-link"
-                        href="?page={{ page_obj.previous_page_number }}&search={{ search }}&location={{ location }}&status={{ status }}">
-
-                        Previous
-
-                    </a>
-
-                </li>
-
-            {% endif %}
-
-            <li class="page-item active">
-
-                <span class="page-link">
-
-                    {{ page_obj.number }}
-
-                </span>
-
-            </li>
-
-            {% if page_obj.has_next %}
-
-                <li class="page-item">
-
-                    <a
-                        class="page-link"
-                        href="?page={{ page_obj.next_page_number }}&search={{ search }}&location={{ location }}&status={{ status }}">
-
-                        Next
-
-                    </a>
-
-                </li>
-
-            {% endif %}
-
-        </ul>
-
-    </nav>
-
-    {% endif %}
-
     {% else %}
 
-        <div class="alert alert-info text-center">
+        <div class="card shadow">
 
-            <h4>No Jobs Found</h4>
+            <div class="card-body text-center py-5">
 
-            <p>
-                Try changing your search filters or create a new job.
-            </p>
+                <h3>
+                    No Jobs Found
+                </h3>
 
-            <a
-                href="{% url 'create-job' %}"
-                class="btn btn-primary">
+                <p class="text-muted">
 
-                Create New Job
+                    You haven't created any jobs yet.
 
-            </a>
+                </p>
+
+                <a
+                    href="{% url 'create-job' %}"
+                    class="btn btn-primary">
+
+                    Create First Job
+
+                </a>
+
+            </div>
 
         </div>
 

@@ -110,13 +110,22 @@
 
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'recruiter-dashboard' %}">
-                                <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                                <i class="bi bi-speedometer2 me-1"></i>
+                                Dashboard
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'recruiter-interviews' %}">
-                                <i class="bi bi-calendar-check me-1"></i>Interviews
+                                <i class="bi bi-calendar-check me-1"></i>
+                                Interviews
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'recruiter-onboarding' %}">
+                                <i class="bi bi-person-check me-1"></i>
+                                Onboarding
                             </a>
                         </li>
 
@@ -124,31 +133,36 @@
 
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'candidate-dashboard' %}">
-                                <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                                <i class="bi bi-speedometer2 me-1"></i>
+                                Dashboard
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'candidate-job-list' %}">
-                                <i class="bi bi-search me-1"></i>Jobs
+                                <i class="bi bi-search me-1"></i>
+                                Jobs
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'my-applications' %}">
-                                <i class="bi bi-file-earmark-text me-1"></i>Applications
+                                <i class="bi bi-file-earmark-text me-1"></i>
+                                Applications
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'candidate-interviews' %}">
-                                <i class="bi bi-calendar-check me-1"></i>Interviews
+                                <i class="bi bi-calendar-check me-1"></i>
+                                Interviews
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'my-profile' %}">
-                                <i class="bi bi-person-vcard me-1"></i>Profile
+                                <i class="bi bi-person-vcard me-1"></i>
+                                Profile
                             </a>
                         </li>
 
@@ -166,27 +180,37 @@
 
                             <i class="bi bi-bell-fill fs-5"></i>
 
-                            {% if unread_count > 0 %}
-                            <span class="position-absolute top-0 start-100 translate-middle
-                                         badge rounded-pill bg-danger">
-                                {{ unread_count }}
-                                <span class="visually-hidden">unread notifications</span>
+                            <span
+                                id="notificationBadge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {% if unread_count == 0 %}d-none{% endif %}">
+
+                                <span id="notificationCount">{{ unread_count|default:0 }}</span>
+
+                                <span class="visually-hidden">
+                                    unread notifications
+                                </span>
+
                             </span>
-                            {% endif %}
 
                         </a>
 
-                        <ul class="dropdown-menu dropdown-menu-end notif-dropdown shadow"
+                        <ul
+                            class="dropdown-menu dropdown-menu-end notif-dropdown shadow"
                             aria-labelledby="notifBell">
 
                             <li>
-                                <h6 class="dropdown-header">Notifications</h6>
+                                <h6 class="dropdown-header">
+                                    Notifications
+                                </h6>
                             </li>
 
                             {% for n in recent_notifications %}
+
                             <li>
-                                <a class="dropdown-item notif-item {% if not n.is_read %}notif-unread{% endif %}"
-                                   href="{{ n.url|default:'#' }}">
+
+                                <a
+                                    class="dropdown-item notif-item {% if not n.is_read %}notif-unread{% endif %}"
+                                    href="{{ n.url|default:'#' }}">
 
                                     <div class="{% if not n.is_read %}fw-semibold{% endif %}">
                                         {{ n.message }}
@@ -197,22 +221,35 @@
                                     </small>
 
                                 </a>
+
                             </li>
+
                             {% empty %}
+
                             <li>
+
                                 <span class="dropdown-item text-muted">
-                                    No notifications yet
+                                    No notifications yet.
                                 </span>
+
                             </li>
+
                             {% endfor %}
 
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
 
                             <li>
-                                <a class="dropdown-item text-center small"
-                                   href="{% url 'notification-list' %}">
+
+                                <a
+                                    class="dropdown-item text-center small"
+                                    href="{% url 'notification-list' %}">
+
                                     View all
+
                                 </a>
+
                             </li>
 
                         </ul>
@@ -279,7 +316,7 @@
 
     {% if messages %}
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show"
              role="alert">
             {{ message }}
             <button type="button" class="btn-close"
@@ -294,6 +331,133 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- ================================= -->
+<!-- Live Notification Toast -->
+<!-- ================================= -->
+
+<div class="toast-container position-fixed top-0 end-0 p-3"
+     style="z-index:9999;">
+
+    <div id="liveNotificationToast"
+         class="toast"
+         role="alert"
+         aria-live="assertive"
+         aria-atomic="true">
+
+        <div class="toast-header">
+
+            <strong class="me-auto">
+                🔔 SmartHire
+            </strong>
+
+            <small>Now</small>
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="toast"
+                aria-label="Close">
+            </button>
+
+        </div>
+
+        <div
+            class="toast-body"
+            id="liveNotificationBody">
+
+        </div>
+
+    </div>
+
+</div>
+
+{% if user.is_authenticated %}
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const RECONNECT_BASE_DELAY = 2000;   // 2s
+    const RECONNECT_MAX_DELAY  = 30000;  // 30s
+    let reconnectAttempts = 0;
+    let socket = null;
+
+    function connect() {
+
+        const protocol =
+            window.location.protocol === "https:" ? "wss://" : "ws://";
+
+        socket = new WebSocket(
+            protocol + window.location.host + "/ws/notifications/"
+        );
+
+        socket.onopen = function () {
+            console.log("✅ WebSocket Connected");
+            reconnectAttempts = 0;
+        };
+
+        socket.onclose = function () {
+            console.log("❌ WebSocket Closed — reconnecting…");
+            const delay = Math.min(
+                RECONNECT_BASE_DELAY * Math.pow(2, reconnectAttempts),
+                RECONNECT_MAX_DELAY
+            );
+            reconnectAttempts += 1;
+            setTimeout(connect, delay);
+        };
+
+        socket.onerror = function (error) {
+            console.error("WebSocket error:", error);
+            socket.close();
+        };
+
+        socket.onmessage = function (event) {
+
+            let data;
+            try {
+                data = JSON.parse(event.data);
+            } catch (e) {
+                console.error("Invalid notification payload:", e);
+                return;
+            }
+
+            // Build the toast body safely (no innerHTML → no XSS)
+            const body = document.getElementById("liveNotificationBody");
+            body.textContent = "";
+
+            const msg = document.createElement("strong");
+            msg.textContent = data.message || "";
+
+            const time = document.createElement("small");
+            time.textContent = data.created_at || "";
+
+            body.appendChild(msg);
+            body.appendChild(document.createElement("br"));
+            body.appendChild(time);
+
+            const toastEl = document.getElementById("liveNotificationToast");
+            bootstrap.Toast.getOrCreateInstance(toastEl).show();
+
+            // Increment the unread badge
+            const badge = document.getElementById("notificationBadge");
+            const countEl = document.getElementById("notificationCount");
+
+            if (badge && countEl) {
+                badge.classList.remove("d-none");
+                const count = parseInt(countEl.textContent.trim(), 10) || 0;
+                countEl.textContent = count + 1;
+            }
+
+        };
+
+    }
+
+    connect();
+
+});
+
+</script>
+{% endif %}
 
 {% block extra_js %}{% endblock %}
 

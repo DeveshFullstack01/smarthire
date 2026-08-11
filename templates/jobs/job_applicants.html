@@ -6,333 +6,351 @@ Job Applicants
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="card shadow border-0">
 
-    <div class="card shadow border-0">
+    <div class="card-header bg-primary text-white">
 
-        <div class="card-header bg-primary text-white">
+        <div class="d-flex justify-content-between align-items-center">
 
-            <div class="d-flex justify-content-between align-items-center">
+            <div>
 
-                <div>
+                <h3 class="mb-1">
+                    {{ job.title }}
+                </h3>
 
-                    <h3 class="mb-1">
-                        {{ job.title }}
-                    </h3>
+                <small>
+                    {{ job.company.name }}
+                </small>
 
-                    <small>
-                        {{ job.company.name }}
-                    </small>
+            </div>
 
-                </div>
+            <div>
 
-                <div class="d-flex gap-2">
+                <a
+                    href="{% url 'job-list' %}"
+                    class="btn btn-light">
 
-                    <a
-                        href="{% url 'candidate-pipeline' job.id %}"
-                        class="btn btn-light">
+                    ← Back to Jobs
 
-                        Pipeline View
-
-                    </a>
-
-                    <a
-                        href="{% url 'job-list' %}"
-                        class="btn btn-light">
-
-                        ← Back
-
-                    </a>
-
-                </div>
+                </a>
 
             </div>
 
         </div>
 
-        <div class="card-body">
+    </div>
 
-            <h4 class="mb-4">
+    <div class="card-body">
 
-                Applicants
+        <h4 class="mb-4">
 
-                <span class="badge bg-secondary">
+            Applicants
 
-                    {{ page_obj.paginator.count }}
+            <span class="badge bg-secondary">
 
-                </span>
+                {{ page_obj.paginator.count }}
 
-            </h4>
+            </span>
 
-            <form
-                method="GET"
-                class="row g-3 mb-4">
+        </h4>
 
-                <div class="col-md-4">
+        <form
+            method="GET"
+            class="row g-3 mb-4">
 
-                    <select
-                        name="status"
-                        class="form-select">
+            <div class="col-md-4">
 
-                        <option value="">
-                            All Status
+                <select
+                    name="status"
+                    class="form-select">
+
+                    <option value="">
+                        All Status
+                    </option>
+
+                    {% for value, label in status_choices %}
+
+                        <option
+                            value="{{ value }}"
+                            {% if status == value %}selected{% endif %}>
+
+                            {{ label }}
+
                         </option>
 
-                        {% for value, label in status_choices %}
+                    {% endfor %}
 
-                            <option
-                                value="{{ value }}"
-                                {% if status == value %}selected{% endif %}>
-
-                                {{ label }}
-
-                            </option>
-
-                        {% endfor %}
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-2">
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary w-100">
-
-                        Filter
-
-                    </button>
-
-                </div>
-
-            </form>
-
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle">
-
-                    <thead class="table-dark">
-
-                        <tr>
-
-                            <th>Candidate</th>
-                            <th>Email</th>
-                            <th>Applied</th>
-                            <th>Status</th>
-                            <th>AI Score</th>
-                            <th>Resume</th>
-                            <th>Actions</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for application in applications %}
-
-                        <tr>
-
-                            <td>
-
-                                <strong>
-
-                                    {{ application.candidate.first_name }}
-                                    {{ application.candidate.last_name }}
-
-                                </strong>
-
-                            </td>
-
-                            <td>
-
-                                {{ application.candidate.email }}
-
-                            </td>
-
-                            <td>
-
-                                {{ application.applied_at|date:"d M Y" }}
-
-                            </td>
-
-                            <td>
-
-                                <span class="badge bg-info">
-
-                                    {{ application.get_status_display }}
-
-                                </span>
-
-                            </td>
-
-                            <td>
-
-                                {% if application.match_score >= 80 %}
-
-                                    <span class="badge bg-success">
-
-                                        {{ application.match_score }}%
-
-                                    </span>
-
-                                {% elif application.match_score >= 60 %}
-
-                                    <span class="badge bg-primary">
-
-                                        {{ application.match_score }}%
-
-                                    </span>
-
-                                {% elif application.match_score >= 40 %}
-
-                                    <span class="badge bg-warning text-dark">
-
-                                        {{ application.match_score }}%
-
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="badge bg-danger">
-
-                                        {{ application.match_score }}%
-
-                                    </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                {% if application.resume %}
-
-                                    <a
-                                        href="{{ application.resume.file.url }}"
-                                        target="_blank"
-                                        class="btn btn-outline-success btn-sm">
-
-                                        View Resume
-
-                                    </a>
-
-                                {% else %}
-
-                                    <span class="text-danger">
-
-                                        Not Uploaded
-
-                                    </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                <div class="btn-group">
-
-                                    <a
-                                        href="{% url 'update-application-status' application.id %}"
-                                        class="btn btn-warning btn-sm">
-
-                                        Status
-
-                                    </a>
-
-                                    <a
-                                        href="{% url 'generate-interview-questions' application.id %}"
-                                        class="btn btn-info btn-sm">
-
-                                        AI Questions
-
-                                    </a>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                        {% empty %}
-
-                        <tr>
-
-                            <td
-                                colspan="7"
-                                class="text-center py-4">
-
-                                No applicants found.
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
+                </select>
 
             </div>
 
-            {% if page_obj.has_other_pages %}
+            <div class="col-md-2">
 
-                <nav class="mt-4">
+                <button
+                    type="submit"
+                    class="btn btn-primary w-100">
 
-                    <ul class="pagination justify-content-center">
+                    Filter
 
-                        {% if page_obj.has_previous %}
+                </button>
 
-                        <li class="page-item">
+            </div>
 
-                            <a
-                                class="page-link"
-                                href="?page={{ page_obj.previous_page_number }}&status={{ status }}">
+        </form>
 
-                                Previous
+        <div class="table-responsive">
 
-                            </a>
+            <table class="table table-hover align-middle">
 
-                        </li>
+                <thead class="table-dark">
 
-                        {% endif %}
+                    <tr>
 
-                        <li class="page-item active">
+                        <th>Candidate</th>
+                        <th>Email</th>
+                        <th>Applied</th>
+                        <th>Status</th>
+                        <th>AI Score</th>
+                        <th>Resume</th>
+                        <th width="420">Actions</th>
 
-                            <span class="page-link">
+                    </tr>
 
-                                {{ page_obj.number }}
+                </thead>
+
+                <tbody>
+
+                    {% for application in applications %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+
+                                {{ application.candidate.get_full_name|default:application.candidate.username }}
+
+                            </strong>
+
+                        </td>
+
+                        <td>
+
+                            {{ application.candidate.email }}
+
+                        </td>
+
+                        <td>
+
+                            {{ application.applied_at|date:"d M Y" }}
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-info">
+
+                                {{ application.get_status_display }}
 
                             </span>
 
-                        </li>
+                        </td>
 
-                        {% if page_obj.has_next %}
+                        <td>
 
-                        <li class="page-item">
+                            {% if application.match_score >= 80 %}
 
-                            <a
-                                class="page-link"
-                                href="?page={{ page_obj.next_page_number }}&status={{ status }}">
+                                <span class="badge bg-success">
 
-                                Next
+                                    {{ application.match_score }}%
 
-                            </a>
+                                </span>
 
-                        </li>
+                            {% elif application.match_score >= 60 %}
 
-                        {% endif %}
+                                <span class="badge bg-primary">
 
-                    </ul>
+                                    {{ application.match_score }}%
 
-                </nav>
+                                </span>
 
-            {% endif %}
+                            {% elif application.match_score >= 40 %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    {{ application.match_score }}%
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-danger">
+
+                                    {{ application.match_score }}%
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if application.resume %}
+
+                                <a
+                                    href="{% url 'view-resume' application.id %}"
+                                    class="btn btn-outline-success btn-sm">
+
+                                    View Resume
+
+                                </a>
+
+                            {% else %}
+
+                                <span class="text-danger">
+
+                                    Not Uploaded
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <div
+                                class="btn-group"
+                                role="group">
+
+                                <a
+                                    href="{% url 'update-application-status' application.id %}"
+                                    class="btn btn-warning btn-sm">
+
+                                    Status
+
+                                </a>
+
+                                <a
+                                    href="{% url 'generate-interview-questions' application.id %}"
+                                    class="btn btn-info btn-sm">
+
+                                    AI Questions
+
+                                </a>
+
+                                <a
+                                    href="{% url 'schedule-interview' application.id %}"
+                                    class="btn btn-success btn-sm">
+
+                                    Interview
+
+                                </a>
+
+                                {% if application.status == "Interview" %}
+
+                                    <a
+                                        href="{% url 'create-offer' application.id %}"
+                                        class="btn btn-dark btn-sm">
+
+                                        Create Offer
+
+                                    </a>
+
+                                {% elif application.status == "Offer" %}
+
+                                    <a
+                                        href="{% url 'recruiter-offers' %}"
+                                        class="btn btn-primary btn-sm">
+
+                                        View Offer
+
+                                    </a>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="text-center py-4">
+
+                            No applicants found.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
 
         </div>
+
+        {% if page_obj.has_other_pages %}
+
+            <nav class="mt-4">
+
+                <ul class="pagination justify-content-center">
+
+                    {% if page_obj.has_previous %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.previous_page_number }}&status={{ status }}">
+
+                            Previous
+
+                        </a>
+
+                    </li>
+
+                    {% endif %}
+
+                    <li class="page-item active">
+
+                        <span class="page-link">
+
+                            {{ page_obj.number }}
+
+                        </span>
+
+                    </li>
+
+                    {% if page_obj.has_next %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.next_page_number }}&status={{ status }}">
+
+                            Next
+
+                        </a>
+
+                    </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </nav>
+
+        {% endif %}
 
     </div>
 

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}
+Offers
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">
+        Offer Management
+    </h2>
+
+    {% if offers %}
+
+    <table class="table table-bordered table-hover">
+
+        <thead class="table-dark">
+
+            <tr>
+
+                <th>Candidate</th>
+                <th>Job</th>
+                <th>Designation</th>
+                <th>Salary</th>
+                <th>Status</th>
+                <th>Joining</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for offer in offers %}
+
+            <tr>
+
+                <td>
+
+                    {{ offer.application.candidate.username }}
+
+                </td>
+
+                <td>
+
+                    {{ offer.application.job.title }}
+
+                </td>
+
+                <td>
+
+                    {{ offer.designation }}
+
+                </td>
+
+                <td>
+
+                    ₹{{ offer.offered_salary }}
+
+                </td>
+
+                <td>
+
+                    <span class="badge bg-primary">
+
+                        {{ offer.status }}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    {{ offer.joining_date }}
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    {% else %}
+
+        <div class="alert alert-info">
+
+            No offers have been created yet.
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

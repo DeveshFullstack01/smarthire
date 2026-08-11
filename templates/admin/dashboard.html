@@ -6,212 +6,805 @@ Admin Dashboard
 
 {% block content %}
 
-<div class="container">
+<!-- ========================================================= -->
+<!-- Header -->
+<!-- ========================================================= -->
 
-    <div class="mb-4">
-        <h2 class="mb-1">Admin Dashboard</h2>
-        <p class="text-muted">Platform overview and analytics.</p>
+<div class="mb-4">
+
+    <h2 class="mb-1">
+        Admin Dashboard
+    </h2>
+
+    <p class="text-muted">
+        Platform overview and analytics.
+    </p>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- Top Statistics -->
+<!-- ========================================================= -->
+
+<div class="row g-3 mb-4">
+
+    <!-- Total Users -->
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm border-primary h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-1">
+                    Total Users
+                </h6>
+
+                <h2 class="text-primary mb-0">
+                    {{ total_users }}
+                </h2>
+
+            </div>
+        </div>
     </div>
 
-    <!-- Top stat cards -->
-    <div class="row g-3 mb-4">
 
-        <div class="col-6 col-lg-3">
-            <div class="card shadow-sm border-primary h-100">
-                <div class="card-body text-center">
-                    <h6 class="text-muted mb-1">Total Users</h6>
-                    <h2 class="text-primary mb-0">{{ total_users }}</h2>
-                </div>
+    <!-- Candidates -->
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm border-success h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-1">
+                    Candidates
+                </h6>
+
+                <h2 class="text-success mb-0">
+                    {{ total_candidates }}
+                </h2>
+
             </div>
         </div>
-
-        <div class="col-6 col-lg-3">
-            <div class="card shadow-sm border-success h-100">
-                <div class="card-body text-center">
-                    <h6 class="text-muted mb-1">Candidates</h6>
-                    <h2 class="text-success mb-0">{{ total_candidates }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-lg-3">
-            <div class="card shadow-sm border-info h-100">
-                <div class="card-body text-center">
-                    <h6 class="text-muted mb-1">Recruiters</h6>
-                    <h2 class="text-info mb-0">{{ total_recruiters }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-lg-3">
-            <div class="card shadow-sm border-secondary h-100">
-                <div class="card-body text-center">
-                    <h6 class="text-muted mb-1">Companies</h6>
-                    <h2 class="text-secondary mb-0">{{ total_companies }}</h2>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <div class="row g-3 mb-4">
 
-        <div class="col-6 col-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <h6 class="text-muted mb-1">Jobs</h6>
-                    <h4 class="mb-0">{{ total_jobs }}</h4>
-                    <small class="text-muted">{{ published_jobs }} published</small>
-                </div>
+    <!-- Recruiters -->
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm border-info h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-1">
+                    Recruiters
+                </h6>
+
+                <h2 class="text-info mb-0">
+                    {{ total_recruiters }}
+                </h2>
+
             </div>
         </div>
-
-        <div class="col-6 col-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <h6 class="text-muted mb-1">Applications</h6>
-                    <h4 class="mb-0">{{ total_applications }}</h4>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
-                    <h6 class="text-muted mb-1">Interviews</h6>
-                    <h4 class="mb-0">{{ total_interviews }}</h4>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-lg-3">
-            <div class="card shadow-sm h-100 {% if unverified_users %}border-warning{% endif %}">
-                <div class="card-body text-center">
-                    <h6 class="text-muted mb-1">Unverified</h6>
-                    <h4 class="mb-0 {% if unverified_users %}text-warning{% endif %}">
-                        {{ unverified_users }}
-                    </h4>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <div class="row">
 
-        <!-- Recent users -->
-        <div class="col-lg-7 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Recent Users</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Username</th>
-                                    <th>Role</th>
-                                    <th>Verified</th>
-                                    <th>Joined</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for u in recent_users %}
-                                <tr>
-                                    <td>{{ u.username }}</td>
-                                    <td>
-                                        <span class="badge bg-secondary">
-                                            {{ u.get_role_display }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {% if u.is_verified %}
-                                        <span class="text-success">Yes</span>
-                                        {% else %}
-                                        <span class="text-warning">No</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ u.date_joined|date:"d M Y" }}</td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="4" class="text-muted text-center">
-                                        No users yet.
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <!-- Companies -->
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm border-secondary h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-1">
+                    Companies
+                </h6>
+
+                <h2 class="text-secondary mb-0">
+                    {{ total_companies }}
+                </h2>
+
             </div>
-        </div>
-
-        <!-- Applications chart -->
-        <div class="col-lg-5 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0">Applications by Status</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="appStatusChart" height="220"></canvas>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Recent companies -->
-    <div class="card shadow-sm mb-5">
-        <div class="card-header bg-secondary text-white">
-            <h5 class="mb-0">Recent Companies</h5>
-        </div>
-        <div class="card-body">
-            {% if recent_companies %}
-            <ul class="list-group list-group-flush">
-                {% for co in recent_companies %}
-                <li class="list-group-item d-flex justify-content-between">
-                    <span>{{ co.name }}</span>
-                    <span class="text-muted small">
-                        Owner: {{ co.owner.username }}
-                    </span>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p class="text-muted mb-0">No companies yet.</p>
-            {% endif %}
         </div>
     </div>
 
 </div>
 
+
+<!-- ========================================================= -->
+<!-- Second Statistics -->
+<!-- ========================================================= -->
+
+<div class="row g-3 mb-5">
+
+    <!-- Jobs -->
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-1">
+                    Jobs
+                </h6>
+
+                <h4 class="mb-0">
+                    {{ total_jobs }}
+                </h4>
+
+                <small class="text-muted">
+                    {{ published_jobs }} published
+                </small>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Applications -->
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-1">
+                    Applications
+                </h6>
+
+                <h4 class="mb-0">
+                    {{ total_applications }}
+                </h4>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Interviews -->
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-1">
+                    Interviews
+                </h6>
+
+                <h4 class="mb-0">
+                    {{ total_interviews }}
+                </h4>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Unverified -->
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm h-100
+            {% if unverified_users %}
+                border-warning
+            {% endif %}">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-1">
+                    Unverified
+                </h6>
+
+                <h4 class="mb-0
+                    {% if unverified_users %}
+                        text-warning
+                    {% endif %}">
+
+                    {{ unverified_users }}
+
+                </h4>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- Quick Management -->
+<!-- ========================================================= -->
+
+<div class="mb-4">
+
+    <h3 class="fw-bold mb-1">
+        Quick Management
+    </h3>
+
+    <p class="text-muted mb-0">
+        Quickly access and manage important areas of SmartHire ATS.
+    </p>
+
+</div>
+
+
+<div class="row g-4 mb-5">
+
+
+    <!-- ===================================================== -->
+    <!-- Users -->
+    <!-- ===================================================== -->
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center mb-3">
+
+                    <div
+                        class="rounded-circle bg-primary text-white
+                               d-flex align-items-center justify-content-center me-3"
+                        style="width: 55px; height: 55px;"
+                    >
+
+                        <i class="bi bi-people fs-4"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h5 class="fw-bold mb-0">
+                            Users
+                        </h5>
+
+                        <small class="text-muted">
+                            {{ total_users }} users
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="/admin/"
+                    class="btn btn-primary w-100"
+                >
+
+                    <i class="bi bi-people me-1"></i>
+
+                    Manage Users
+
+                </a>
+
+
+                <small class="text-muted d-block mt-2">
+                    Open Django administration to manage users.
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- Companies -->
+    <!-- ===================================================== -->
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center mb-3">
+
+                    <div
+                        class="rounded-circle bg-secondary text-white
+                               d-flex align-items-center justify-content-center me-3"
+                        style="width: 55px; height: 55px;"
+                    >
+
+                        <i class="bi bi-building fs-4"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h5 class="fw-bold mb-0">
+                            Companies
+                        </h5>
+
+                        <small class="text-muted">
+                            {{ total_companies }} companies
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="/admin/"
+                    class="btn btn-secondary w-100"
+                >
+
+                    <i class="bi bi-building me-1"></i>
+
+                    Manage Companies
+
+                </a>
+
+
+                <small class="text-muted d-block mt-2">
+                    Open Django administration to manage companies.
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- Jobs -->
+    <!-- ===================================================== -->
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center mb-3">
+
+                    <div
+                        class="rounded-circle bg-dark text-white
+                               d-flex align-items-center justify-content-center me-3"
+                        style="width: 55px; height: 55px;"
+                    >
+
+                        <i class="bi bi-briefcase fs-4"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h5 class="fw-bold mb-0">
+                            Jobs
+                        </h5>
+
+                        <small class="text-muted">
+                            {{ total_jobs }} jobs
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- IMPORTANT:
+                     Admin must use admin-job-list,
+                     not recruiter job-list -->
+
+                <a
+                    href="{% url 'admin-job-list' %}"
+                    class="btn btn-dark w-100"
+                >
+
+                    <i class="bi bi-briefcase me-1"></i>
+
+                    Manage Jobs
+
+                </a>
+
+
+                <small class="text-muted d-block mt-2">
+                    View, create, update and manage all jobs.
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- Applications -->
+    <!-- ===================================================== -->
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center mb-3">
+
+                    <div
+                        class="rounded-circle bg-info text-white
+                               d-flex align-items-center justify-content-center me-3"
+                        style="width: 55px; height: 55px;"
+                    >
+
+                        <i class="bi bi-file-earmark-text fs-4"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h5 class="fw-bold mb-0">
+                            Applications
+                        </h5>
+
+                        <small class="text-muted">
+                            {{ total_applications }} applications
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="{% url 'admin-applications' %}"
+                    class="btn btn-info text-white w-100"
+                >
+
+                    <i class="bi bi-file-earmark-text me-1"></i>
+
+                    Manage Applications
+
+                </a>
+
+
+                <small class="text-muted d-block mt-2">
+                    View and manage all candidate applications.
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- Interviews -->
+    <!-- ===================================================== -->
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center mb-3">
+
+                    <div
+                        class="rounded-circle bg-warning text-dark
+                               d-flex align-items-center justify-content-center me-3"
+                        style="width: 55px; height: 55px;"
+                    >
+
+                        <i class="bi bi-calendar-check fs-4"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h5 class="fw-bold mb-0">
+                            Interviews
+                        </h5>
+
+                        <small class="text-muted">
+                            {{ total_interviews }} interviews
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- IMPORTANT:
+                     Admin must use admin-interviews,
+                     not recruiter-interviews -->
+
+                <a
+                    href="{% url 'admin-interviews' %}"
+                    class="btn btn-warning w-100"
+                >
+
+                    <i class="bi bi-calendar-check me-1"></i>
+
+                    Manage Interviews
+
+                </a>
+
+
+                <small class="text-muted d-block mt-2">
+                    View and manage all interviews across SmartHire ATS.
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- Employee Onboarding -->
+    <!-- ===================================================== -->
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center mb-3">
+
+                    <div
+                        class="rounded-circle bg-success text-white
+                               d-flex align-items-center justify-content-center me-3"
+                        style="width: 55px; height: 55px;"
+                    >
+
+                        <i class="bi bi-person-check fs-4"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h5 class="fw-bold mb-0">
+                            Employee Onboarding
+                        </h5>
+
+                        <small class="text-muted">
+                            Manage approved employees
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="{% url 'admin-onboarding' %}"
+                    class="btn btn-success w-100"
+                >
+
+                    <i class="bi bi-person-check me-1"></i>
+
+                    Open Onboarding
+
+                </a>
+
+
+                <small class="text-muted d-block mt-2">
+                    View, review and complete employee onboarding.
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- Recent Users + Applications Chart -->
+<!-- ========================================================= -->
+
+<div class="row">
+
+
+    <!-- Recent Users -->
+
+    <div class="col-lg-7 mb-4">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header bg-primary text-white">
+
+                <h5 class="mb-0">
+                    Recent Users
+                </h5>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-sm table-hover mb-0">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Username
+                                </th>
+
+                                <th>
+                                    Role
+                                </th>
+
+                                <th>
+                                    Verified
+                                </th>
+
+                                <th>
+                                    Joined
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                        {% for u in recent_users %}
+
+                            <tr>
+
+                                <td>
+                                    {{ u.username }}
+                                </td>
+
+
+                                <td>
+
+                                    <span class="badge bg-secondary">
+                                        {{ u.get_role_display }}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if u.is_verified %}
+
+                                        <span class="text-success">
+                                            Yes
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="text-warning">
+                                            No
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+                                    {{ u.date_joined|date:"d M Y" }}
+                                </td>
+
+                            </tr>
+
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="4"
+                                    class="text-muted text-center"
+                                >
+                                    No users yet.
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Applications Chart -->
+
+    <div class="col-lg-5 mb-4">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header bg-dark text-white">
+
+                <h5 class="mb-0">
+                    Applications by Status
+                </h5>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <canvas
+                    id="appStatusChart"
+                    height="220"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- Recent Companies -->
+<!-- ========================================================= -->
+
+<div class="card shadow-sm mb-5">
+
+    <div class="card-header bg-secondary text-white">
+
+        <h5 class="mb-0">
+            Recent Companies
+        </h5>
+
+    </div>
+
+
+    <div class="card-body">
+
+        {% if recent_companies %}
+
+            <ul class="list-group list-group-flush">
+
+                {% for co in recent_companies %}
+
+                    <li
+                        class="list-group-item
+                               d-flex
+                               justify-content-between"
+                    >
+
+                        <span>
+                            {{ co.name }}
+                        </span>
+
+
+                        <span class="text-muted small">
+                            Owner: {{ co.owner.username }}
+                        </span>
+
+                    </li>
+
+                {% endfor %}
+
+            </ul>
+
+        {% else %}
+
+            <p class="text-muted mb-0">
+                No companies yet.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
 {% endblock %}
 
-{% block extra_js %}
-<script>
-    const labels = {{ app_status_labels|safe }};
-    const data = {{ app_status_data|safe }};
 
-    new Chart(document.getElementById("appStatusChart"), {
-        type: "bar",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Applications",
-                data: data,
-                backgroundColor: [
-                    "#0d6efd", "#0dcaf0", "#ffc107", "#198754", "#dc3545"
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-            plugins: { legend: { display: false } }
-        }
-    });
-</script>
+{% block extra_js %}
+
 {% endblock %}

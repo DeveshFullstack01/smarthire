@@ -1,0 +1,514 @@
+{% extends "base.html" %}
+
+{% block title %}
+Employee Onboarding | SmartHire ATS
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- Header -->
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold">
+            Employee Onboarding
+        </h2>
+
+        <p class="text-muted mb-0">
+            Complete your onboarding information for
+            {{ offer.designation }} at
+            {{ offer.application.job.company.name }}.
+        </p>
+
+    </div>
+
+
+    <!-- Offer Summary -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-primary text-white">
+
+            <h5 class="mb-0">
+                Offer Details
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>
+                        Designation
+                    </strong>
+
+                    <div>
+                        {{ offer.designation }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>
+                        Company
+                    </strong>
+
+                    <div>
+                        {{ offer.application.job.company.name }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>
+                        Annual Salary
+                    </strong>
+
+                    <div>
+                        ₹{{ offer.offered_salary }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>
+                        Joining Date
+                    </strong>
+
+                    <div>
+                        {{ offer.joining_date|date:"d M Y" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Onboarding Status -->
+
+    <div class="alert alert-info">
+
+        <strong>
+            Current Status:
+        </strong>
+
+        {{ onboarding.get_status_display }}
+
+    </div>
+
+
+    <!-- Onboarding Form -->
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <!-- Personal Information -->
+
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-dark text-white">
+
+                <h5 class="mb-0">
+                    Personal Information
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Date of Birth
+                        </label>
+
+                        {{ form.date_of_birth }}
+
+                        {% for error in form.date_of_birth.errors %}
+                            <div class="text-danger small">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Gender
+                        </label>
+
+                        {{ form.gender }}
+
+                        {% for error in form.gender.errors %}
+                            <div class="text-danger small">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Phone
+                        </label>
+
+                        {{ form.phone }}
+
+                        {% for error in form.phone.errors %}
+                            <div class="text-danger small">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Alternate Phone
+                        </label>
+
+                        {{ form.alternate_phone }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Address -->
+
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-dark text-white">
+
+                <h5 class="mb-0">
+                    Address
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Complete Address
+                    </label>
+
+                    {{ form.address }}
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label">
+                            City
+                        </label>
+
+                        {{ form.city }}
+
+                    </div>
+
+
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label">
+                            State
+                        </label>
+
+                        {{ form.state }}
+
+                    </div>
+
+
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label">
+                            Country
+                        </label>
+
+                        {{ form.country }}
+
+                    </div>
+
+
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label">
+                            Pincode
+                        </label>
+
+                        {{ form.pincode }}
+
+                        {% for error in form.pincode.errors %}
+                            <div class="text-danger small">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Emergency Contact -->
+
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-dark text-white">
+
+                <h5 class="mb-0">
+                    Emergency Contact
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Contact Name
+                        </label>
+
+                        {{ form.emergency_contact_name }}
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Relationship
+                        </label>
+
+                        {{ form.emergency_contact_relationship }}
+
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Phone
+                        </label>
+
+                        {{ form.emergency_contact_phone }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Government IDs -->
+
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-dark text-white">
+
+                <h5 class="mb-0">
+                    Government Identification
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            PAN Number
+                        </label>
+
+                        {{ form.pan_number }}
+
+                        {% for error in form.pan_number.errors %}
+                            <div class="text-danger small">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Aadhaar Number
+                        </label>
+
+                        {{ form.aadhaar_number }}
+
+                        {% for error in form.aadhaar_number.errors %}
+                            <div class="text-danger small">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Passport Number
+                        </label>
+
+                        {{ form.passport_number }}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Driving License Number
+                        </label>
+
+                        {{ form.driving_license_number }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Bank Details -->
+
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header bg-dark text-white">
+
+                <h5 class="mb-0">
+                    Bank Details
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Bank Name
+                        </label>
+
+                        {{ form.bank_name }}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Account Number
+                        </label>
+
+                        {{ form.account_number }}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            IFSC Code
+                        </label>
+
+                        {{ form.ifsc_code }}
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Bank Branch
+                        </label>
+
+                        {{ form.bank_branch }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Submit -->
+
+        <div class="d-flex justify-content-end gap-2 mb-5">
+
+            <a
+                href="{% url 'my-offers' %}"
+                class="btn btn-outline-secondary">
+
+                Back to Offers
+
+            </a>
+
+            <button
+                type="submit"
+                class="btn btn-primary px-4">
+
+                Save Onboarding Information
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

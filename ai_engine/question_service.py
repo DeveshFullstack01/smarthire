@@ -6,30 +6,43 @@ from applicants.models import Application
 from .extractor import extract_skills
 from .models import InterviewQuestion
 from .question_bank import QUESTION_BANK
-from .services import calculate_match_score
 
 logger = logging.getLogger(__name__)
 
 
 def generate_interview_questions(application_id):
+    """
+    Generate AI interview questions based on the candidate's
+    resume analysis and the job description.
+    """
+
     logger.info(
-        "Starting interview question generation for application_id=%s",
+        "Starting interview question generation. application_id=%s",
         application_id,
     )
 
-    application = Application.objects.get(id=application_id)
+    application = Application.objects.select_related(
+        "resume",
+        "job",
+        "candidate",
+    ).get(id=application_id)
 
-    result = calculate_match_score(
-        application.resume.file.path,
-        application.job.description,
+    parsed = application.resume.parsed_data or {}
+
+    matched_skills = parsed.get("matched_skills", [])
+
+    job_skills = (
+        extract_skills(application.job.description)
+        if application.job.description
+        else []
     )
-
-    matched_skills = result["matched_skills"]
-    job_skills = extract_skills(application.job.description)
 
     skills_to_generate = matched_skills or job_skills
 
-    logger.debug("Skills selected for generation: %s", skills_to_generate)
+    logger.info(
+        "Generating questions for skills: %s",
+        skills_to_generate,
+    )
 
     InterviewQuestion.objects.filter(
         application=application,
@@ -38,53 +51,43 @@ def generate_interview_questions(application_id):
     generated_questions = []
 
     for skill in skills_to_generate:
-        logger.debug("Processing skill: %s", skill)
 
         if skill not in QUESTION_BANK:
+
             logger.warning(
-                "No question bank found for skill: %s",
+                "Question bank not found for skill '%s'",
                 skill,
             )
+
             continue
 
         questions = QUESTION_BANK[skill]
-
-        logger.debug(
-            "Found %d questions for skill '%s'",
-            len(questions),
-            skill,
-        )
 
         selected_questions = random.sample(
             questions,
             min(3, len(questions)),
         )
 
-        logger.debug(
-            "Selected %d questions for skill '%s'",
+        logger.info(
+            "Selected %d questions for %s",
             len(selected_questions),
             skill,
         )
 
-        for question in selected_questions:
-            logger.debug(
-                "Creating interview question for skill '%s'",
-                skill,
-            )
+        for question_data in selected_questions:
 
-            question_obj = InterviewQuestion.objects.create(
+            question = InterviewQuestion.objects.create(
                 application=application,
                 skill=skill,
-                question=question,
-                difficulty="Medium",
+                question=question_data["question"],
+                difficulty=question_data["difficulty"],
             )
 
-            generated_questions.append(question_obj)
+            generated_questions.append(question)
 
     logger.info(
-        "Generated %d interview questions for application_id=%s",
+        "Generated %d interview questions.",
         len(generated_questions),
-        application_id,
     )
 
     return generated_questions

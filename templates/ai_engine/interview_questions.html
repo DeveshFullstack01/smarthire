@@ -1,46 +1,130 @@
 {% extends "base.html" %}
 
+{% block title %}
+AI Interview Questions
+{% endblock %}
+
 {% block content %}
 
-<div class="container mt-5">
+<div class="container mt-4">
 
-    <div class="card shadow">
+    <div class="card shadow-lg border-0">
 
         <div class="card-header bg-primary text-white">
-            <h3>AI Interview Questions</h3>
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <h3 class="mb-1">
+                        AI Interview Questions
+                    </h3>
+
+                    <small>
+                        SmartHire ATS
+                    </small>
+
+                </div>
+
+                <div>
+
+                    <button
+                        onclick="window.print()"
+                        class="btn btn-light btn-sm">
+
+                        🖨 Print
+
+                    </button>
+
+                </div>
+
+            </div>
+
         </div>
 
         <div class="card-body">
 
-            <h4>{{ application.candidate.get_full_name|default:application.candidate.username }}</h4>
+            <div class="row mb-4">
 
-            <p>
-                <strong>Email:</strong>
-                {{ application.candidate.email }}
-            </p>
+                <div class="col-md-6">
 
-            <p>
-                <strong>Job:</strong>
-                {{ application.job.title }}
-            </p>
+                    <h4 class="fw-bold">
 
-            <p>
-                <strong>Resume Match Score:</strong>
+                        {{ application.candidate.get_full_name|default:application.candidate.username }}
 
-                {% if application.match_score %}
-                    <span class="badge bg-success">
-                        {{ application.match_score }}%
-                    </span>
-                {% else %}
-                    <span class="badge bg-secondary">
-                        Not Available
-                    </span>
-                {% endif %}
-            </p>
+                    </h4>
+
+                    <p class="mb-1">
+
+                        <strong>Email :</strong>
+
+                        {{ application.candidate.email }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Job :</strong>
+
+                        {{ application.job.title }}
+
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 text-md-end">
+
+                    <h6 class="text-muted">
+
+                        AI Resume Match
+
+                    </h6>
+
+                    {% if application.match_score >= 80 %}
+
+                        <span class="badge bg-success fs-6">
+
+                            {{ application.match_score }}%
+
+                        </span>
+
+                    {% elif application.match_score >= 60 %}
+
+                        <span class="badge bg-primary fs-6">
+
+                            {{ application.match_score }}%
+
+                        </span>
+
+                    {% elif application.match_score >= 40 %}
+
+                        <span class="badge bg-warning text-dark fs-6">
+
+                            {{ application.match_score }}%
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-danger fs-6">
+
+                            {{ application.match_score|default:"0" }}%
+
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
 
             <hr>
 
-            <h4>Interview Questions</h4>
+            <h4 class="mb-4">
+
+                Technical Interview Questions
+
+            </h4>
 
             {% if questions %}
 
@@ -48,31 +132,63 @@
 
                 {% for skill in skill_list %}
 
-                    <div class="card mt-4">
+                    <div class="card mb-4 border-0 shadow-sm">
 
                         <div class="card-header bg-light">
 
-                            <h5>{{ skill.grouper }}</h5>
+                            <h5 class="mb-0">
+
+                                {{ skill.grouper }}
+
+                            </h5>
 
                         </div>
 
-                        <ul class="list-group list-group-flush">
+                        <div class="card-body">
 
-                            {% for question in skill.list %}
+                            <ol class="mb-0">
 
-                                <li class="list-group-item">
+                                {% for question in skill.list %}
 
-                                    {{ question.question }}
+                                    <li class="mb-3">
 
-                                    <span class="badge bg-info float-end">
-                                        {{ question.difficulty }}
-                                    </span>
+                                        {{ question.question }}
 
-                                </li>
+                                        <br>
 
-                            {% endfor %}
+                                        {% if question.difficulty == "Easy" %}
 
-                        </ul>
+                                            <span class="badge bg-success mt-2">
+
+                                                Easy
+
+                                            </span>
+
+                                        {% elif question.difficulty == "Medium" %}
+
+                                            <span class="badge bg-warning text-dark mt-2">
+
+                                                Medium
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="badge bg-danger mt-2">
+
+                                                Hard
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </li>
+
+                                {% endfor %}
+
+                            </ol>
+
+                        </div>
 
                     </div>
 
@@ -82,7 +198,7 @@
 
                 <div class="alert alert-warning">
 
-                    No interview questions generated yet.
+                    No interview questions have been generated yet.
 
                 </div>
 
@@ -90,20 +206,22 @@
 
         </div>
 
-        <div class="card-footer">
+        <div class="card-footer d-flex justify-content-between">
 
             <a
                 href="{% url 'generate-interview-questions' application.id %}"
-                class="btn btn-success"
-            >
-                Generate Again
+                class="btn btn-success">
+
+                🔄 Generate Again
+
             </a>
 
             <a
                 href="javascript:history.back()"
-                class="btn btn-secondary"
-            >
-                Back
+                class="btn btn-secondary">
+
+                ← Back
+
             </a>
 
         </div>

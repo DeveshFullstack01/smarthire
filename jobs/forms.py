@@ -134,7 +134,7 @@ class JobForm(forms.ModelForm):
     def clean_application_deadline(self):
         deadline = self.cleaned_data["application_deadline"]
 
-        if deadline < date.today():
+        if deadline and deadline< date.today():
             raise forms.ValidationError(
                 "Application deadline cannot be in the past."
             )

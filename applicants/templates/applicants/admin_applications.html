@@ -1,0 +1,447 @@
+{% extends "base.html" %}
+
+{% block title %}
+Manage Applications | SmartHire ATS
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="fw-bold mb-1">
+            Manage Applications
+        </h2>
+
+        <p class="text-muted mb-0">
+            View and manage all candidate applications.
+        </p>
+    </div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- Statistics -->
+<!-- ================================================= -->
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4 col-lg-2">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Total
+                </h6>
+
+                <h3 class="fw-bold">
+                    {{ total_applications }}
+                </h3>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 col-lg-2">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Applied
+                </h6>
+
+                <h3 class="text-primary">
+                    {{ applied_count }}
+                </h3>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 col-lg-2">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Screening
+                </h6>
+
+                <h3 class="text-warning">
+                    {{ screening_count }}
+                </h3>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 col-lg-2">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Interview
+                </h6>
+
+                <h3 class="text-info">
+                    {{ interview_count }}
+                </h3>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 col-lg-2">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Offer
+                </h6>
+
+                <h3 class="text-success">
+                    {{ offer_count }}
+                </h3>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 col-lg-2">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Rejected
+                </h6>
+
+                <h3 class="text-danger">
+                    {{ rejected_count }}
+                </h3>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- Search -->
+<!-- ================================================= -->
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <form method="GET">
+
+            <div class="row g-3">
+
+                <div class="col-md-5">
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        placeholder="Search candidate, job or company"
+                        value="{{ search }}"
+                    >
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <select
+                        name="status"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            All Status
+                        </option>
+
+                        {% for value, label in status_choices %}
+
+                            <option
+                                value="{{ value }}"
+                                {% if status == value %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ label }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- Applications -->
+<!-- ================================================= -->
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-header bg-primary text-white">
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <h5 class="mb-0">
+                All Applications
+            </h5>
+
+            <span class="badge bg-light text-dark">
+                {{ page_obj.paginator.count }} Records
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle mb-0">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>Candidate</th>
+
+                    <th>Job</th>
+
+                    <th>Company</th>
+
+                    <th>Applied</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for application in applications %}
+
+                <tr>
+
+                    <!-- Candidate -->
+
+                    <td>
+
+                        <strong>
+                            {{ application.candidate.username }}
+                        </strong>
+
+                        <br>
+
+                        <small class="text-muted">
+                            {{ application.candidate.email }}
+                        </small>
+
+                    </td>
+
+
+                    <!-- Job -->
+
+                    <td>
+                        {{ application.job.title }}
+                    </td>
+
+
+                    <!-- Company -->
+
+                    <td>
+                        {{ application.job.company.name }}
+                    </td>
+
+
+                    <!-- Applied -->
+
+                    <td>
+                        {{ application.applied_at|date:"d M Y" }}
+                    </td>
+
+
+                    <!-- Status -->
+
+                    <td>
+
+                        {% if application.status == "APPLIED" %}
+
+                            <span class="badge bg-primary">
+                                Applied
+                            </span>
+
+                        {% elif application.status == "SCREENING" %}
+
+                            <span class="badge bg-warning text-dark">
+                                Screening
+                            </span>
+
+                        {% elif application.status == "INTERVIEW" %}
+
+                            <span class="badge bg-info">
+                                Interview
+                            </span>
+
+                        {% elif application.status == "OFFER" %}
+
+                            <span class="badge bg-success">
+                                Offer
+                            </span>
+
+                        {% elif application.status == "REJECTED" %}
+
+                            <span class="badge bg-danger">
+                                Rejected
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-secondary">
+                                {{ application.get_status_display }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- Action -->
+
+                    <td>
+
+                        <a
+                            href="{% url 'update-application-status' application.id %}"
+                            class="btn btn-sm btn-outline-primary"
+                        >
+                            Manage
+                        </a>
+
+                    </td>
+
+                </tr>
+
+
+                {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="text-center py-5 text-muted"
+                    >
+
+                        No applications found.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- Pagination -->
+    <!-- ================================================= -->
+
+    {% if page_obj.has_other_pages %}
+
+    <div class="card-footer">
+
+        <nav>
+
+            <ul class="pagination justify-content-center mb-0">
+
+                {% if page_obj.has_previous %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ status }}"
+                        >
+                            Previous
+                        </a>
+
+                    </li>
+
+                {% endif %}
+
+
+                <li class="page-item active">
+
+                    <span class="page-link">
+                        {{ page_obj.number }}
+                    </span>
+
+                </li>
+
+
+                {% if page_obj.has_next %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ status }}"
+                        >
+                            Next
+                        </a>
+
+                    </li>
+
+                {% endif %}
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

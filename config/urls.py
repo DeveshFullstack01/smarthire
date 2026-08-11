@@ -7,16 +7,19 @@ from config.views import health_check
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 
+from django.shortcuts import render
 
-@login_required
-def home_redirect(request):
-    if request.user.role == "recruiter":
-        return redirect("recruiter-dashboard")
-    return redirect("candidate-job-list")
+def home(request):
+    if request.user.is_authenticated:
+        if request.user.role == "recruiter":
+            return redirect("recruiter-dashboard")
+        return redirect("candidate-job-list")
+
+    return render(request, "index.html")
 
 urlpatterns = [
     path("health/", health_check, name="health"),
-    path("", home_redirect, name="home"),
+    path("", home, name="home"),
     path("admin/", admin.site.urls),
 
     path("api/accounts/", include("accounts.urls")),
@@ -30,6 +33,8 @@ urlpatterns = [
     path("ai/", include("ai_engine.urls")),
     path("interviews/", include("interviews.urls")),
     path("notifications/", include("notifications.urls")),
+    path("offers/", include("offers.urls")),
+    path("onboarding/", include("onboarding.urls")),
 ]
 
 # Serve media files during development

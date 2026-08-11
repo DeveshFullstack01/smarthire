@@ -1,42 +1,69 @@
 {% extends "base.html" %}
 
 {% block title %}
-AI Resume Analysis
+AI Resume Analysis | SmartHire ATS
 {% endblock %}
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container py-4">
 
-    <div class="card shadow">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div class="card-header bg-dark text-white">
+        <div>
 
-            <h3 class="mb-0">
+            <h2 class="fw-bold">
                 🤖 AI Resume Analysis
-            </h3>
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Candidate Resume Intelligence Report
+
+            </p>
 
         </div>
 
-        <div class="card-body">
+        <div>
 
-            <div class="row mb-4">
+            <a href="{% url 'view-resume' application.id %}"
+               target="_blank"
+               class="btn btn-outline-dark">
 
-                <div class="col-md-6">
+                📄 View Resume
+
+            </a>
+
+            <a href="{% url 'download-resume' application.id %}"
+               class="btn btn-primary">
+
+                ⬇ Download
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- Candidate -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
 
                     <h5>Candidate</h5>
 
-                    <p>
+                    <h4>
 
-                        <strong>
+                        {{ application.candidate.get_full_name|default:application.candidate.username }}
 
-                            {{ application.candidate.get_full_name|default:application.candidate.username }}
+                    </h4>
 
-                        </strong>
-
-                    </p>
-
-                    <p>
+                    <p class="text-muted">
 
                         {{ application.candidate.email }}
 
@@ -44,13 +71,27 @@ AI Resume Analysis
 
                 </div>
 
-                <div class="col-md-6">
+            </div>
 
-                    <h5>Job Applied</h5>
+        </div>
 
-                    <p>
+        <div class="col-md-6">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h5>Applied Job</h5>
+
+                    <h4>
 
                         {{ application.job.title }}
+
+                    </h4>
+
+                    <p class="text-muted">
+
+                        {{ application.job.company.name }}
 
                     </p>
 
@@ -58,15 +99,23 @@ AI Resume Analysis
 
             </div>
 
-            <hr>
+        </div>
 
-            <h4>
+    </div>
+
+    <!-- Score -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <h4 class="mb-3">
 
                 Overall Match Score
 
             </h4>
 
-            <div class="progress mb-4" style="height:30px;">
+            <div class="progress" style="height:35px;">
 
                 <div
                     class="progress-bar
@@ -79,230 +128,306 @@ AI Resume Analysis
                     {% else %}
                         bg-danger
                     {% endif %}"
-                    role="progressbar"
                     style="width: {{ parsed.score }}%;">
 
-                    {{ parsed.score }}%
+                    <strong>
+
+                        {{ parsed.score }}%
+
+                    </strong>
 
                 </div>
 
             </div>
-
-            <div class="row">
-
-                <div class="col-md-6">
-
-                    <div class="card border-success mb-3">
-
-                        <div class="card-header bg-success text-white">
-
-                            ✅ Matched Skills
-
-                        </div>
-
-                        <div class="card-body">
-
-                            {% if parsed.matched_skills %}
-
-                                {% for skill in parsed.matched_skills %}
-
-                                    <span class="badge bg-success me-2 mb-2">
-
-                                        {{ skill }}
-
-                                    </span>
-
-                                {% endfor %}
-
-                            {% else %}
-
-                                <p class="text-muted">
-
-                                    No matched skills found.
-
-                                </p>
-
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="col-md-6">
-
-                    <div class="card border-danger mb-3">
-
-                        <div class="card-header bg-danger text-white">
-
-                            ❌ Missing Skills
-
-                        </div>
-
-                        <div class="card-body">
-
-                            {% if parsed.missing_skills %}
-
-                                {% for skill in parsed.missing_skills %}
-
-                                    <span class="badge bg-danger me-2 mb-2">
-
-                                        {{ skill }}
-
-                                    </span>
-
-                                {% endfor %}
-
-                            {% else %}
-
-                                <p class="text-muted">
-
-                                    No missing skills.
-
-                                </p>
-
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <hr>
-
-            <div class="row">
-
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header"><strong>Contact Details</strong></div>
-                        <div class="card-body">
-                            {% if parsed.contact %}
-                            <ul class="list-unstyled mb-0 small">
-                                {% if parsed.contact.email %}
-                                <li><i class="bi bi-envelope me-1"></i>{{ parsed.contact.email }}</li>
-                                {% endif %}
-                                {% if parsed.contact.phone %}
-                                <li><i class="bi bi-telephone me-1"></i>{{ parsed.contact.phone }}</li>
-                                {% endif %}
-                                {% if parsed.contact.linkedin %}
-                                <li><i class="bi bi-linkedin me-1"></i>{{ parsed.contact.linkedin }}</li>
-                                {% endif %}
-                                {% if parsed.contact.github %}
-                                <li><i class="bi bi-github me-1"></i>{{ parsed.contact.github }}</li>
-                                {% endif %}
-                            </ul>
-                            {% else %}
-                            <span class="text-muted small">No contact details extracted.</span>
-                            {% endif %}
-                            {% if parsed.years_of_experience %}
-                            <hr class="my-2">
-                            <span class="badge bg-secondary">
-                                {{ parsed.years_of_experience }} years experience
-                            </span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header"><strong>Education &amp; Certifications</strong></div>
-                        <div class="card-body">
-                            {% if parsed.education %}
-                            <h6 class="small text-muted mb-1">Education</h6>
-                            <ul class="small mb-2">
-                                {% for edu in parsed.education %}
-                                <li>{{ edu }}</li>
-                                {% endfor %}
-                            </ul>
-                            {% endif %}
-                            {% if parsed.certifications %}
-                            <h6 class="small text-muted mb-1">Certifications</h6>
-                            <ul class="small mb-0">
-                                {% for cert in parsed.certifications %}
-                                <li>{{ cert }}</li>
-                                {% endfor %}
-                            </ul>
-                            {% endif %}
-                            {% if not parsed.education and not parsed.certifications %}
-                            <span class="text-muted small">None extracted.</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            {% if parsed.recommendations %}
-            <div class="card border-info mb-3">
-                <div class="card-header bg-info text-white">
-                    <strong>AI Suggestions</strong>
-                </div>
-                <div class="card-body">
-                    <ul class="mb-0">
-                        {% for rec in parsed.recommendations %}
-                        <li>{{ rec }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            {% endif %}
-
-            <hr>
-
-            <h4>
-
-                AI Recommendation
-            <h4>
-
-
-            {% if parsed.score >= 80 %}
-
-                <div class="alert alert-success">
-
-                    ⭐ Highly Recommended
-
-                </div>
-
-            {% elif parsed.score >= 60 %}
-
-                <div class="alert alert-primary">
-
-                    👍 Recommended
-
-                </div>
-
-            {% elif parsed.score >= 40 %}
-
-                <div class="alert alert-warning">
-
-                    ⚠ Consider for Screening
-
-                </div>
-
-            {% else %}
-
-                <div class="alert alert-danger">
-
-                    ❌ Not Recommended
-
-                </div>
-
-            {% endif %}
-
-            <a
-                href="{% url 'recruiter-applications' application.job.id %}"
-                class="btn btn-secondary mt-3">
-
-                ← Back to Applications
-
-            </a>
 
         </div>
+
+    </div>
+
+    <!-- Recommendation -->
+
+    {% if parsed.score >= 80 %}
+
+    <div class="alert alert-success">
+
+        ⭐ <strong>Strong Hire</strong>
+
+    </div>
+
+    {% elif parsed.score >= 60 %}
+
+    <div class="alert alert-primary">
+
+        👍 <strong>Recommended</strong>
+
+    </div>
+
+    {% elif parsed.score >= 40 %}
+
+    <div class="alert alert-warning">
+
+        ⚠ <strong>Needs Screening</strong>
+
+    </div>
+
+    {% else %}
+
+    <div class="alert alert-danger">
+
+        ❌ <strong>Not Recommended</strong>
+
+    </div>
+
+    {% endif %}
+
+    <!-- Skills -->
+
+    <div class="row">
+
+        <div class="col-lg-6 mb-4">
+
+            <div class="card border-success shadow-sm">
+
+                <div class="card-header bg-success text-white">
+
+                    Matched Skills
+
+                </div>
+
+                <div class="card-body">
+
+                    {% for skill in parsed.matched_skills %}
+
+                        <span class="badge bg-success me-2 mb-2">
+
+                            {{ skill }}
+
+                        </span>
+
+                    {% empty %}
+
+                        <p class="text-muted">
+
+                            No matched skills found.
+
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-6 mb-4">
+
+            <div class="card border-danger shadow-sm">
+
+                <div class="card-header bg-danger text-white">
+
+                    Missing Skills
+
+                </div>
+
+                <div class="card-body">
+
+                    {% for skill in parsed.missing_skills %}
+
+                        <span class="badge bg-danger me-2 mb-2">
+
+                            {{ skill }}
+
+                        </span>
+
+                    {% empty %}
+
+                        <p class="text-muted">
+
+                            No missing skills.
+
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Details -->
+
+    <div class="row">
+
+        <div class="col-lg-6">
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    Contact Details
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if parsed.contact.email %}
+
+                    <p>
+
+                        <strong>Email:</strong>
+
+                        {{ parsed.contact.email }}
+
+                    </p>
+
+                    {% endif %}
+
+                    {% if parsed.contact.phone %}
+
+                    <p>
+
+                        <strong>Phone:</strong>
+
+                        {{ parsed.contact.phone }}
+
+                    </p>
+
+                    {% endif %}
+
+                    {% if parsed.contact.linkedin %}
+
+                    <p>
+
+                        <strong>LinkedIn:</strong>
+
+                        {{ parsed.contact.linkedin }}
+
+                    </p>
+
+                    {% endif %}
+
+                    {% if parsed.contact.github %}
+
+                    <p>
+
+                        <strong>GitHub:</strong>
+
+                        {{ parsed.contact.github }}
+
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-6">
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    Experience
+
+                </div>
+
+                <div class="card-body">
+
+                    <h2>
+
+                        {{ parsed.years_of_experience|default:"0" }}
+
+                        Years
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Education -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            Education
+
+        </div>
+
+        <div class="card-body">
+
+            {% for edu in parsed.education %}
+
+                <li>{{ edu }}</li>
+
+            {% empty %}
+
+                <p class="text-muted">
+
+                    Not Available
+
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <!-- AI Suggestions -->
+
+    {% if parsed.recommendations %}
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header bg-info text-white">
+
+            AI Suggestions
+
+        </div>
+
+        <div class="card-body">
+
+            <ul>
+
+                {% for suggestion in parsed.recommendations %}
+
+                    <li>
+
+                        {{ suggestion }}
+
+                    </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <div class="text-end">
+
+        <a href="{% url 'recruiter-applications' application.job.id %}"
+           class="btn btn-secondary">
+
+            ← Back to Applications
+
+        </a>
 
     </div>
 

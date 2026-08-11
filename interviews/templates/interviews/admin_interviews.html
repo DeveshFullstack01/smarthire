@@ -1,0 +1,464 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin - Interview Management | SmartHire ATS
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <!-- ================================================= -->
+    <!-- Page Header -->
+    <!-- ================================================= -->
+
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">
+            Interview Management
+        </h2>
+
+        <p class="text-muted mb-0">
+            View and monitor all interviews across SmartHire ATS.
+        </p>
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- Statistics -->
+    <!-- ================================================= -->
+
+    <div class="row g-3 mb-4">
+
+        <!-- Total -->
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-primary h-100">
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted mb-1">
+                        Total Interviews
+                    </h6>
+
+                    <h2 class="text-primary mb-0">
+                        {{ total_count }}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Scheduled -->
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-info h-100">
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted mb-1">
+                        Scheduled
+                    </h6>
+
+                    <h2 class="text-info mb-0">
+                        {{ scheduled_count }}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Completed -->
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-success h-100">
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted mb-1">
+                        Completed
+                    </h6>
+
+                    <h2 class="text-success mb-0">
+                        {{ completed_count }}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Cancelled -->
+
+        <div class="col-6 col-lg-3">
+            <div class="card shadow-sm border-danger h-100">
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted mb-1">
+                        Cancelled
+                    </h6>
+
+                    <h2 class="text-danger mb-0">
+                        {{ cancelled_count }}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- Rescheduled -->
+    <!-- ================================================= -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-12 col-lg-3">
+
+            <div class="card shadow-sm border-warning">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted mb-1">
+                        Rescheduled
+                    </h6>
+
+                    <h2 class="text-warning mb-0">
+                        {{ rescheduled_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- Interview Table -->
+    <!-- ================================================= -->
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-warning text-dark">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0">
+                    All Interviews
+                </h5>
+
+                <span class="badge bg-dark">
+                    {{ total_count }} Records
+                </span>
+
+            </div>
+
+        </div>
+
+
+        {% if interviews %}
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Candidate</th>
+
+                        <th>Job</th>
+
+                        <th>Company</th>
+
+                        <th>Date</th>
+
+                        <th>Round</th>
+
+                        <th>Type</th>
+
+                        <th>Interviewer</th>
+
+                        <th>Status</th>
+
+                        <th>Rating</th>
+
+                        <th>Recommendation</th>
+
+                        <th>Meeting</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for interview in interviews %}
+
+                    <tr>
+
+                        <!-- Candidate -->
+
+                        <td>
+
+                            <strong>
+                                {{ interview.application.candidate.get_full_name|default:interview.application.candidate.username }}
+                            </strong>
+
+                            <br>
+
+                            <small class="text-muted">
+                                {{ interview.application.candidate.email }}
+                            </small>
+
+                        </td>
+
+
+                        <!-- Job -->
+
+                        <td>
+
+                            <strong>
+                                {{ interview.application.job.title }}
+                            </strong>
+
+                        </td>
+
+
+                        <!-- Company -->
+
+                        <td>
+
+                            {{ interview.application.job.company.name }}
+
+                        </td>
+
+
+                        <!-- Date -->
+
+                        <td>
+
+                            {{ interview.scheduled_at|date:"d M Y" }}
+
+                            <br>
+
+                            <small class="text-muted">
+                                {{ interview.scheduled_at|date:"h:i A" }}
+                            </small>
+
+                        </td>
+
+
+                        <!-- Round -->
+
+                        <td>
+
+                            <span class="badge bg-dark">
+
+                                {{ interview.get_interview_round_display }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- Interview Type -->
+
+                        <td>
+
+                            {% if interview.interview_type == "Online" %}
+
+                                <span class="badge bg-primary">
+                                    Online
+                                </span>
+
+                            {% elif interview.interview_type == "Offline" %}
+
+                                <span class="badge bg-secondary">
+                                    Offline
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-info text-dark">
+                                    Phone
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Interviewer -->
+
+                        <td>
+
+                            {{ interview.interviewer_name|default:"—" }}
+
+                        </td>
+
+
+                        <!-- Status -->
+
+                        <td>
+
+                            {% if interview.status == "Scheduled" %}
+
+                                <span class="badge bg-primary">
+                                    Scheduled
+                                </span>
+
+                            {% elif interview.status == "Completed" %}
+
+                                <span class="badge bg-success">
+                                    Completed
+                                </span>
+
+                            {% elif interview.status == "Cancelled" %}
+
+                                <span class="badge bg-danger">
+                                    Cancelled
+                                </span>
+
+                            {% elif interview.status == "Rescheduled" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Rescheduled
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+                                    {{ interview.get_status_display }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Rating -->
+
+                        <td>
+
+                            {% if interview.overall_rating %}
+
+                                <span class="badge bg-success">
+                                    {{ interview.overall_rating }}/5
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    —
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Recommendation -->
+
+                        <td>
+
+                            {% if interview.recommendation == "Strong Hire" %}
+
+                                <span class="badge bg-success">
+                                    Strong Hire
+                                </span>
+
+                            {% elif interview.recommendation == "Hire" %}
+
+                                <span class="badge bg-primary">
+                                    Hire
+                                </span>
+
+                            {% elif interview.recommendation == "Hold" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Hold
+                                </span>
+
+                            {% elif interview.recommendation == "Reject" %}
+
+                                <span class="badge bg-danger">
+                                    Reject
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    —
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Meeting -->
+
+                        <td>
+
+                            {% if interview.meeting_link %}
+
+                                <a
+                                    href="{{ interview.meeting_link }}"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="btn btn-outline-primary btn-sm"
+                                >
+                                    Join
+                                </a>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    —
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <!-- ================================================= -->
+        <!-- No Interviews -->
+        <!-- ================================================= -->
+
+        <div class="card-body text-center py-5">
+
+            <h4 class="mb-2">
+                No Interviews Found
+            </h4>
+
+            <p class="text-muted mb-0">
+                Interviews scheduled by recruiters will appear here.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

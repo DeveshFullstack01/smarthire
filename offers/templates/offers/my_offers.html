@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Job Offers
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold">
+            My Job Offers
+        </h2>
+
+        <p class="text-muted mb-0">
+            Review and respond to your job offers.
+        </p>
+
+    </div>
+
+</div>
+
+
+{% if offers %}
+
+<div class="row">
+
+    {% for offer in offers %}
+
+    <div class="col-lg-6 mb-4">
+
+        <div class="card shadow border-0 h-100">
+
+            <!-- ==========================================
+                 Offer Header
+            =========================================== -->
+
+            <div class="card-header bg-primary text-white">
+
+                <h5 class="mb-0">
+                    {{ offer.designation }}
+                </h5>
+
+            </div>
+
+
+            <!-- ==========================================
+                 Offer Details
+            =========================================== -->
+
+            <div class="card-body">
+
+                <p>
+
+                    <strong>
+                        Company:
+                    </strong>
+
+                    {{ offer.application.job.company.name }}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Salary:
+                    </strong>
+
+                    ₹{{ offer.offered_salary }}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Joining Date:
+                    </strong>
+
+                    {{ offer.joining_date|date:"d M Y" }}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Offer Expires:
+                    </strong>
+
+                    {{ offer.expiry_date|date:"d M Y" }}
+
+                </p>
+
+
+                <!-- ==========================================
+                     Offer Status
+                =========================================== -->
+
+                <p>
+
+                    <strong>
+                        Status:
+                    </strong>
+
+
+                    {% if offer.status == "Pending" %}
+
+                        <span class="badge bg-warning text-dark">
+
+                            Pending
+
+                        </span>
+
+
+                    {% elif offer.status == "Accepted" %}
+
+                        <span class="badge bg-success">
+
+                            Accepted
+
+                        </span>
+
+
+                    {% elif offer.status == "Rejected" %}
+
+                        <span class="badge bg-danger">
+
+                            Rejected
+
+                        </span>
+
+
+                    {% elif offer.status == "Expired" %}
+
+                        <span class="badge bg-secondary">
+
+                            Expired
+
+                        </span>
+
+
+                    {% elif offer.status == "Withdrawn" %}
+
+                        <span class="badge bg-dark">
+
+                            Withdrawn
+
+                        </span>
+
+
+                    {% else %}
+
+                        <span class="badge bg-secondary">
+
+                            {{ offer.get_status_display }}
+
+                        </span>
+
+                    {% endif %}
+
+                </p>
+
+
+                <!-- ==========================================
+                     Recruiter Message
+                =========================================== -->
+
+                {% if offer.recruiter_note %}
+
+                    <hr>
+
+                    <strong>
+                        Recruiter Message
+                    </strong>
+
+                    <p class="mt-2 text-muted">
+
+                        {{ offer.recruiter_note }}
+
+                    </p>
+
+                {% endif %}
+
+
+                <!-- ==========================================
+                     Candidate Response Information
+                =========================================== -->
+
+                {% if offer.responded_at %}
+
+                    <hr>
+
+                    <small class="text-muted">
+
+                        Responded on
+                        {{ offer.responded_at|date:"d M Y, h:i A" }}
+
+                    </small>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- ==========================================
+                 Actions
+            =========================================== -->
+
+            <div class="card-footer">
+
+                <div class="d-flex flex-wrap gap-2">
+
+
+                    <!-- ======================================
+                         Download Offer Letter
+                    ======================================= -->
+
+                    {% if offer.offer_letter %}
+
+                        <a
+                            href="{{ offer.offer_letter.url }}"
+                            target="_blank"
+                            class="btn btn-outline-primary">
+
+                            Download Offer
+
+                        </a>
+
+                    {% endif %}
+
+
+                    <!-- ======================================
+                         Pending Offer Actions
+                    ======================================= -->
+
+                    {% if offer.status == "Pending" %}
+
+                        <a
+                            href="{% url 'respond-offer' offer.id 'accept' %}"
+                            class="btn btn-success">
+
+                            Accept
+
+                        </a>
+
+
+                        <a
+                            href="{% url 'respond-offer' offer.id 'reject' %}"
+                            class="btn btn-danger">
+
+                            Reject
+
+                        </a>
+
+                    {% endif %}
+
+
+                    <!-- ======================================
+                         Accepted Offer → Onboarding
+                    ======================================= -->
+
+                    {% if offer.status == "Accepted" %}
+
+                        <a
+                            href="{% url 'start-onboarding' offer.id %}"
+                            class="btn btn-success">
+
+                            Start Onboarding
+
+                        </a>
+
+                    {% endif %}
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+
+{% else %}
+
+<!-- ==========================================
+     No Offers
+=========================================== -->
+
+<div class="card shadow border-0">
+
+    <div class="card-body text-center py-5">
+
+        <h3>
+            No Offers Yet
+        </h3>
+
+        <p class="text-muted mb-0">
+
+            Offers from recruiters will appear here.
+
+        </p>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

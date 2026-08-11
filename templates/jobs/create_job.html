@@ -30,88 +30,178 @@ Create Job | SmartHire ATS
 
                     {% if messages %}
                         {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}">
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+
                                 {{ message }}
+
+                                <button
+                                    type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert">
+                                </button>
+
                             </div>
                         {% endfor %}
                     {% endif %}
 
-                    <form method="post">
+                    <form method="POST">
 
                         {% csrf_token %}
 
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+
+                                {% for error in form.non_field_errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+
+                            </div>
+                        {% endif %}
+
                         <div class="row">
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label fw-semibold">
                                     {{ form.title.label }}
                                 </label>
+
                                 {{ form.title }}
-                                {{ form.title.errors }}
+
+                                {% for error in form.title.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label fw-semibold">
                                     {{ form.location.label }}
                                 </label>
+
                                 {{ form.location }}
-                                {{ form.location.errors }}
+
+                                {% for error in form.location.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label fw-semibold">
                                     {{ form.job_type.label }}
                                 </label>
+
                                 {{ form.job_type }}
-                                {{ form.job_type.errors }}
+
+                                {% for error in form.job_type.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label fw-semibold">
                                     {{ form.status.label }}
                                 </label>
+
                                 {{ form.status }}
-                                {{ form.status.errors }}
+
+                                {% for error in form.status.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
                             </div>
 
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">
+                            <div class="col-md-4 mb-4">
+
+                                <label class="form-label fw-semibold">
                                     {{ form.salary.label }}
                                 </label>
+
                                 {{ form.salary }}
-                                {{ form.salary.errors }}
+
+                                {% for error in form.salary.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
                             </div>
 
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">
+                            <div class="col-md-4 mb-4">
+
+                                <label class="form-label fw-semibold">
                                     {{ form.experience.label }}
                                 </label>
+
                                 {{ form.experience }}
-                                {{ form.experience.errors }}
+
+                                {% for error in form.experience.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
                             </div>
 
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">
+                            <div class="col-md-4 mb-4">
+
+                                <label class="form-label fw-semibold">
                                     {{ form.vacancies.label }}
                                 </label>
+
                                 {{ form.vacancies }}
-                                {{ form.vacancies.errors }}
+
+                                {% for error in form.vacancies.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label fw-semibold">
                                     {{ form.application_deadline.label }}
                                 </label>
+
                                 {{ form.application_deadline }}
-                                {{ form.application_deadline.errors }}
+
+                                {% for error in form.application_deadline.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
                             </div>
 
-                            <div class="col-12 mb-3">
-                                <label class="form-label">
+                            <div class="col-12 mb-4">
+
+                                <label class="form-label fw-semibold">
                                     {{ form.description.label }}
                                 </label>
+
                                 {{ form.description }}
-                                {{ form.description.errors }}
+
+                                {% for error in form.description.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
                             </div>
 
                         </div>
@@ -129,6 +219,7 @@ Create Job | SmartHire ATS
                             </a>
 
                             <button
+                                id="submitBtn"
                                 type="submit"
                                 class="btn btn-primary">
 
@@ -149,5 +240,22 @@ Create Job | SmartHire ATS
     </div>
 
 </div>
+
+<script>
+
+document.querySelector("form").addEventListener("submit", function () {
+
+    const button = document.getElementById("submitBtn");
+
+    button.disabled = true;
+
+    button.innerHTML = `
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Creating Job...
+    `;
+
+});
+
+</script>
 
 {% endblock %}

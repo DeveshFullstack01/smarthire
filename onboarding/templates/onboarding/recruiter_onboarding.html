@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+
+{% block title %}
+Employee Onboarding
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- ========================================== -->
+    <!-- Header -->
+    <!-- ========================================== -->
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold mb-1">
+            Employee Onboarding
+        </h2>
+
+        <p class="text-muted mb-0">
+            Review and manage candidate onboarding records.
+        </p>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- Statistics -->
+    <!-- ========================================== -->
+
+    <div class="row g-3 mb-4">
+
+        <!-- Total -->
+
+        <div class="col-md-4 col-lg">
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        {{ onboarding_records|length }}
+                    </h2>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Not Started -->
+
+        <div class="col-md-4 col-lg">
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Not Started
+                    </h6>
+
+                    <h2 class="fw-bold text-secondary">
+                        {{ not_started_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- In Progress -->
+
+        <div class="col-md-4 col-lg">
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        In Progress
+                    </h6>
+
+                    <h2 class="fw-bold text-warning">
+                        {{ in_progress_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Under Review -->
+
+        <div class="col-md-4 col-lg">
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Under Review
+                    </h6>
+
+                    <h2 class="fw-bold text-info">
+                        {{ under_review_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Approved -->
+
+        <div class="col-md-4 col-lg">
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Approved
+                    </h6>
+
+                    <h2 class="fw-bold text-success">
+                        {{ approved_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Completed -->
+
+        <div class="col-md-4 col-lg">
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Completed
+                    </h6>
+
+                    <h2 class="fw-bold text-success">
+                        {{ completed_count }}
+                    </h2>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- Candidate Onboarding Records -->
+    <!-- ========================================== -->
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+                Candidate Onboarding Records
+            </h5>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            {% if onboarding_records %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>
+                                Candidate
+                            </th>
+
+                            <th>
+                                Job
+                            </th>
+
+                            <th>
+                                Designation
+                            </th>
+
+                            <th>
+                                Offer
+                            </th>
+
+                            <th>
+                                Onboarding Status
+                            </th>
+
+                            <th>
+                                Updated
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for onboarding in onboarding_records %}
+
+                        <tr>
+
+                            <!-- Candidate -->
+
+                            <td>
+
+                                <strong>
+                                    {{ onboarding.candidate.username }}
+                                </strong>
+
+                                <br>
+
+                                <small class="text-muted">
+                                    {{ onboarding.candidate.email }}
+                                </small>
+
+                            </td>
+
+
+                            <!-- Job -->
+
+                            <td>
+
+                                {{ onboarding.offer.application.job.title }}
+
+                            </td>
+
+
+                            <!-- Designation -->
+
+                            <td>
+
+                                {{ onboarding.offer.designation }}
+
+                            </td>
+
+
+                            <!-- Offer Status -->
+
+                            <td>
+
+                                {% if onboarding.offer.status == "Accepted" %}
+
+                                    <span class="badge bg-success">
+                                        Accepted
+                                    </span>
+
+                                {% elif onboarding.offer.status == "Pending" %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+
+                                {% elif onboarding.offer.status == "Rejected" %}
+
+                                    <span class="badge bg-danger">
+                                        Rejected
+                                    </span>
+
+                                {% elif onboarding.offer.status == "Expired" %}
+
+                                    <span class="badge bg-secondary">
+                                        Expired
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-dark">
+                                        {{ onboarding.offer.status }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Onboarding Status -->
+
+                            <td>
+
+                                {% if onboarding.status == "Not Started" %}
+
+                                    <span class="badge bg-secondary">
+                                        Not Started
+                                    </span>
+
+                                {% elif onboarding.status == "In Progress" %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        In Progress
+                                    </span>
+
+                                {% elif onboarding.status == "Under Review" %}
+
+                                    <span class="badge bg-info text-dark">
+                                        Under Review
+                                    </span>
+
+                                {% elif onboarding.status == "Approved" %}
+
+                                    <span class="badge bg-success">
+                                        Approved
+                                    </span>
+
+                                {% elif onboarding.status == "Rejected" %}
+
+                                    <span class="badge bg-danger">
+                                        Rejected
+                                    </span>
+
+                                {% elif onboarding.status == "Completed" %}
+
+                                    <span class="badge bg-success">
+                                        Completed
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-dark">
+                                        {{ onboarding.status }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Updated -->
+
+                            <td>
+
+                                <small>
+
+                                    {{ onboarding.updated_at|date:"d M Y" }}
+
+                                    <br>
+
+                                    {{ onboarding.updated_at|date:"h:i A" }}
+
+                                </small>
+
+                            </td>
+
+
+                            <!-- Action -->
+
+                            <td>
+
+                                {% if onboarding.status == "Under Review" %}
+
+                                    <a
+                                        href="{% url 'review-onboarding' onboarding.id %}"
+                                        class="btn btn-primary btn-sm"
+                                    >
+                                        Review
+                                    </a>
+
+                                {% elif onboarding.status == "Approved" %}
+
+                                    <span class="badge bg-success">
+                                        Approved
+                                    </span>
+
+                                {% elif onboarding.status == "Rejected" %}
+
+                                    <span class="badge bg-danger">
+                                        Rejected
+                                    </span>
+
+                                {% elif onboarding.status == "Completed" %}
+
+                                    <span class="badge bg-success">
+                                        Completed
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="text-muted">
+                                        No Action
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <!-- No Records -->
+
+            <div class="text-center py-5">
+
+                <h4>
+                    No onboarding records
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Candidate onboarding records will appear here
+                    after candidates submit their information.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,71 +1,258 @@
 {% extends "base.html" %}
 
 {% block title %}
-Job Details
+{{ job.title }} | SmartHire ATS
 {% endblock %}
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container py-5">
 
-    <div class="card shadow">
+    <div class="row">
 
-        <div class="card-body">
+        <div class="col-lg-8">
 
-            <h2>{{ job.title }}</h2>
+            <div class="card shadow border-0">
 
-            <hr>
+                <div class="card-header bg-primary text-white">
 
-            <p>
-                <strong>Location:</strong>
-                {{ job.location }}
-            </p>
+                    <h2 class="mb-1">
 
-            <p>
-                <strong>Job Type:</strong>
-                {{ job.job_type }}
-            </p>
+                        {{ job.title }}
 
-            <p>
-                <strong>Salary:</strong>
-                ₹{{ job.salary }}
-            </p>
+                    </h2>
 
-            <p>
-                <strong>Company:</strong>
-                {{ job.company.name }}
-            </p>
+                    <p class="mb-0">
 
-            <p>
-                <strong>Description:</strong>
-            </p>
+                        {{ job.company.name }}
 
-            <p>
-                {{ job.description }}
-            </p>
+                    </p>
 
-            <p>
-                <strong>Created On:</strong>
-                {{ job.created_at }}
-            </p>
+                </div>
 
-            <hr>
+                <div class="card-body">
 
-            <a href="{% url 'job-list' %}" class="btn btn-secondary">
-                ← Back
-            </a>
+                    <div class="row mb-4">
 
-            <a href="{% url 'apply-job' job.id %}" class="btn btn-success">
-                Apply Now
-            </a>
+                        <div class="col-md-6">
 
-            <a href="{% url 'job-update' job.id %}" class="btn btn-warning">
-                Edit
-            </a>
+                            <h6 class="text-muted">
 
-            <a href="{% url 'job-delete' job.id %}" class="btn btn-danger">
-                Delete
-            </a>
+                                Location
+
+                            </h6>
+
+                            <p>
+
+                                {{ job.location }}
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <h6 class="text-muted">
+
+                                Job Type
+
+                            </h6>
+
+                            <p>
+
+                                {{ job.job_type }}
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <h6 class="text-muted">
+
+                                Salary
+
+                            </h6>
+
+                            <p>
+
+                                ₹{{ job.salary }}
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <h6 class="text-muted">
+
+                                Experience
+
+                            </h6>
+
+                            <p>
+
+                                {{ job.experience }} Years
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <h6 class="text-muted">
+
+                                Vacancies
+
+                            </h6>
+
+                            <p>
+
+                                {{ job.vacancies }}
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <h6 class="text-muted">
+
+                                Deadline
+
+                            </h6>
+
+                            <p>
+
+                                {{ job.application_deadline|default:"Not Set" }}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <h4>
+
+                        Job Description
+
+                    </h4>
+
+                    <p style="white-space:pre-line;">
+
+                        {{ job.description }}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-header bg-dark text-white">
+
+                    Job Information
+
+                </div>
+
+                <div class="card-body">
+
+                    <p>
+
+                        <strong>Status :</strong>
+
+                        {% if job.status == "Published" %}
+
+                            <span class="badge bg-success">
+
+                                Published
+
+                            </span>
+
+                        {% elif job.status == "Draft" %}
+
+                            <span class="badge bg-secondary">
+
+                                Draft
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-danger">
+
+                                Closed
+
+                            </span>
+
+                        {% endif %}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Created :</strong>
+
+                        {{ job.created_at|date:"d M Y" }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Last Updated :</strong>
+
+                        {{ job.updated_at|date:"d M Y" }}
+
+                    </p>
+
+                    <hr>
+
+                    <div class="d-grid gap-2">
+
+                        <a
+                            href="{% url 'job-update' job.id %}"
+                            class="btn btn-warning">
+
+                            Edit Job
+
+                        </a>
+
+                        <a
+                            href="{% url 'job-applicants' job.id %}"
+                            class="btn btn-success">
+
+                            View Applicants
+
+                        </a>
+
+                        <a
+                            href="{% url 'job-delete' job.id %}"
+                            class="btn btn-danger">
+
+                            Delete Job
+
+                        </a>
+
+                        <a
+                            href="{% url 'job-list' %}"
+                            class="btn btn-outline-secondary">
+
+                            Back
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 

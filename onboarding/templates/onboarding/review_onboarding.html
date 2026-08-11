@@ -1,0 +1,663 @@
+{% extends "base.html" %}
+
+{% block title %}
+Review Employee Onboarding
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- ========================================== -->
+    <!-- Header -->
+    <!-- ========================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                Review Employee Onboarding
+            </h2>
+
+            <p class="text-muted mb-0">
+                Review candidate information before approving onboarding.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'recruiter-onboarding' %}"
+            class="btn btn-outline-secondary"
+        >
+            Back to Onboarding
+        </a>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- Candidate / Offer Information -->
+    <!-- ========================================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header bg-primary text-white">
+
+            <h5 class="mb-0">
+                Candidate & Offer Details
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Candidate</strong>
+
+                    <div>
+                        {{ onboarding.candidate.username }}
+                    </div>
+
+                    <small class="text-muted">
+                        {{ onboarding.candidate.email }}
+                    </small>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Job</strong>
+
+                    <div>
+                        {{ onboarding.offer.application.job.title }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Designation</strong>
+
+                    <div>
+                        {{ onboarding.offer.designation }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Company</strong>
+
+                    <div>
+                        {{ onboarding.offer.application.job.company.name }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Joining Date</strong>
+
+                    <div>
+                        {{ onboarding.offer.joining_date }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Annual Salary</strong>
+
+                    <div>
+                        ₹{{ onboarding.offer.offered_salary }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- Onboarding Status -->
+    <!-- ========================================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+                Onboarding Status
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <strong>Current Status:</strong>
+
+            {% if onboarding.status == "Not Started" %}
+
+                <span class="badge bg-secondary">
+                    Not Started
+                </span>
+
+            {% elif onboarding.status == "In Progress" %}
+
+                <span class="badge bg-warning text-dark">
+                    In Progress
+                </span>
+
+            {% elif onboarding.status == "Under Review" %}
+
+                <span class="badge bg-info text-dark">
+                    Under Review
+                </span>
+
+            {% elif onboarding.status == "Approved" %}
+
+                <span class="badge bg-success">
+                    Approved
+                </span>
+
+            {% elif onboarding.status == "Rejected" %}
+
+                <span class="badge bg-danger">
+                    Rejected
+                </span>
+
+            {% elif onboarding.status == "Completed" %}
+
+                <span class="badge bg-success">
+                    Completed
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- Personal Information -->
+    <!-- ========================================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+                Personal Information
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Date of Birth</strong>
+
+                    <div>
+                        {{ onboarding.date_of_birth|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Gender</strong>
+
+                    <div>
+                        {{ onboarding.gender|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Phone</strong>
+
+                    <div>
+                        {{ onboarding.phone|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Alternate Phone</strong>
+
+                    <div>
+                        {{ onboarding.alternate_phone|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- Address -->
+    <!-- ========================================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+                Address
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                <strong>Address</strong>
+            </p>
+
+            <p>
+                {{ onboarding.address|default:"Not provided" }}
+            </p>
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <strong>City</strong>
+
+                    <p>
+                        {{ onboarding.city|default:"Not provided" }}
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <strong>State</strong>
+
+                    <p>
+                        {{ onboarding.state|default:"Not provided" }}
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <strong>Country</strong>
+
+                    <p>
+                        {{ onboarding.country|default:"Not provided" }}
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <strong>Pincode</strong>
+
+                    <p>
+                        {{ onboarding.pincode|default:"Not provided" }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- Emergency Contact -->
+    <!-- ========================================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+                Emergency Contact
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4">
+
+                    <strong>Name</strong>
+
+                    <p>
+                        {{ onboarding.emergency_contact_name|default:"Not provided" }}
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <strong>Relationship</strong>
+
+                    <p>
+                        {{ onboarding.emergency_contact_relationship|default:"Not provided" }}
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <strong>Phone</strong>
+
+                    <p>
+                        {{ onboarding.emergency_contact_phone|default:"Not provided" }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- Government Identification -->
+    <!-- ========================================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+                Government Identification
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>PAN Number</strong>
+
+                    <div>
+                        {{ onboarding.pan_number|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Aadhaar Number</strong>
+
+                    <div>
+                        {{ onboarding.aadhaar_number|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Passport Number</strong>
+
+                    <div>
+                        {{ onboarding.passport_number|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Driving License</strong>
+
+                    <div>
+                        {{ onboarding.driving_license_number|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- Bank Details -->
+    <!-- ========================================== -->
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+                Bank Details
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Bank Name</strong>
+
+                    <div>
+                        {{ onboarding.bank_name|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Account Number</strong>
+
+                    <div>
+                        {{ onboarding.account_number|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>IFSC Code</strong>
+
+                    <div>
+                        {{ onboarding.ifsc_code|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Bank Branch</strong>
+
+                    <div>
+                        {{ onboarding.bank_branch|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- Candidate Note -->
+    <!-- ========================================== -->
+
+    {% if onboarding.candidate_note %}
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+                Candidate Note
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {{ onboarding.candidate_note }}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ========================================== -->
+    <!-- Recruiter Actions -->
+    <!-- ========================================== -->
+
+    {% if onboarding.status == "Under Review" %}
+
+    <div class="card shadow border-0 mb-5">
+
+        <div class="card-header bg-primary text-white">
+
+            <h5 class="mb-0">
+                Recruiter Decision
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <!-- Approve -->
+
+            <form
+                method="post"
+                class="mb-3"
+            >
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="approve"
+                >
+
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                >
+
+                    <i class="bi bi-check-circle me-1"></i>
+
+                    Approve Onboarding
+
+                </button>
+
+            </form>
+
+
+            <!-- Reject -->
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="reject"
+                >
+
+                <div class="mb-3">
+
+                    <label
+                        for="rejection_reason"
+                        class="form-label fw-semibold"
+                    >
+                        Rejection Reason
+                    </label>
+
+                    <textarea
+                        name="rejection_reason"
+                        id="rejection_reason"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Explain why the onboarding information is being rejected..."
+                    ></textarea>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-danger"
+                >
+
+                    <i class="bi bi-x-circle me-1"></i>
+
+                    Reject Onboarding
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="alert alert-info mb-5">
+
+        This onboarding record has already been processed.
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

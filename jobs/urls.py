@@ -10,20 +10,89 @@ from .web_views import (
     update_job,
 )
 
+from . import admin_views
+
+
 urlpatterns = [
 
-    path("create/", create_job, name="create-job"),
+    # ==================================================
+    # Recruiter
+    # ==================================================
 
-    path("list/", job_list, name="job-list"),
+    path(
+        "create/",
+        create_job,
+        name="create-job",
+    ),
 
-    path("detail/<int:job_id>/", job_detail, name="job-detail"),
+    path(
+        "list/",
+        job_list,
+        name="job-list",
+    ),
 
-    path("update/<int:job_id>/", update_job, name="job-update"),
+    path(
+        "detail/<int:job_id>/",
+        job_detail,
+        name="job-detail",
+    ),
 
-    path("delete/<int:job_id>/", delete_job, name="job-delete"),
+    path(
+        "update/<int:job_id>/",
+        update_job,
+        name="job-update",
+    ),
 
-    path("candidate/jobs/", candidate_job_list, name="candidate-job-list"),
+    path(
+        "delete/<int:job_id>/",
+        delete_job,
+        name="job-delete",
+    ),
 
-    path("applicants/<int:job_id>/", job_applicants, name="job-applicants"),
+    path(
+        "applicants/<int:job_id>/",
+        job_applicants,
+        name="job-applicants",
+    ),
+
+
+    # ==================================================
+    # Candidate
+    # ==================================================
+
+    path(
+        "candidate/jobs/",
+        candidate_job_list,
+        name="candidate-job-list",
+    ),
+
+
+    # ==================================================
+    # Admin
+    # ==================================================
+
+    path(
+        "admin/",
+        admin_views.admin_job_list,
+        name="admin-job-list",
+    ),
+
+    path(
+        "admin/<int:job_id>/",
+        admin_views.admin_job_detail,
+        name="admin-job-detail",
+    ),
+
+    path(
+        "admin/<int:job_id>/edit/",
+        admin_views.admin_edit_job,
+        name="admin-edit-job",
+    ),
+
+    path(
+        "admin/<int:job_id>/delete/",
+        admin_views.admin_delete_job,
+        name="admin-delete-job",
+    ),
 
 ]

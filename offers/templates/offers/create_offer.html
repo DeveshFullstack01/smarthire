@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create Offer | SmartHire ATS
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-success text-white">
+
+            <h3 class="mb-0">
+                Create Offer
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="mb-4">
+
+                <h5>
+                    Candidate
+                </h5>
+
+                <p class="mb-1">
+                    <strong>
+                        {{ application.candidate.get_full_name|default:application.candidate.username }}
+                    </strong>
+                </p>
+
+                <p class="text-muted mb-1">
+                    {{ application.candidate.email }}
+                </p>
+
+                <p class="mb-0">
+                    <strong>Applied For:</strong>
+                    {{ application.job.title }}
+                </p>
+
+            </div>
+
+            <hr>
+
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+
+                    <div class="alert alert-danger">
+
+                        {{ form.non_field_errors }}
+
+                    </div>
+
+                {% endif %}
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            {{ form.designation.label }}
+                        </label>
+
+                        {{ form.designation }}
+
+                        <div class="text-danger small">
+                            {{ form.designation.errors }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            {{ form.employment_type.label }}
+                        </label>
+
+                        {{ form.employment_type }}
+
+                        <div class="text-danger small">
+                            {{ form.employment_type.errors }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            {{ form.work_location.label }}
+                        </label>
+
+                        {{ form.work_location }}
+
+                        <div class="text-danger small">
+                            {{ form.work_location.errors }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            {{ form.offered_salary.label }}
+                        </label>
+
+                        {{ form.offered_salary }}
+
+                        <div class="text-danger small">
+                            {{ form.offered_salary.errors }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            {{ form.joining_bonus.label }}
+                        </label>
+
+                        {{ form.joining_bonus }}
+
+                        <div class="text-danger small">
+                            {{ form.joining_bonus.errors }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            {{ form.joining_date.label }}
+                        </label>
+
+                        {{ form.joining_date }}
+
+                        <div class="text-danger small">
+                            {{ form.joining_date.errors }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            {{ form.expiry_date.label }}
+                        </label>
+
+                        {{ form.expiry_date }}
+
+                        <div class="text-danger small">
+                            {{ form.expiry_date.errors }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            {{ form.offer_letter.label }}
+                        </label>
+
+                        {{ form.offer_letter }}
+
+                        <div class="text-danger small">
+                            {{ form.offer_letter.errors }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-12 mb-3">
+
+                        <label class="form-label">
+                            {{ form.recruiter_note.label }}
+                        </label>
+
+                        {{ form.recruiter_note }}
+
+                        <div class="text-danger small">
+                            {{ form.recruiter_note.errors }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a
+                        href="{% url 'recruiter-offers' %}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+                        Create Offer
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

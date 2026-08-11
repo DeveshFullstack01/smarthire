@@ -241,6 +241,8 @@ def resume_analysis(request, application_id):
         "application": application,
         "resume": resume,
         "parsed": resume.parsed_data or {},
+        "view_resume_url": "view-resume",
+        "download_resume_url": "download-resume",
     }
 
     return render(

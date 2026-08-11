@@ -1,260 +1,356 @@
 {% extends "base.html" %}
 
 {% block title %}
-Recruiter Applications
+Recruiter Applications | SmartHire ATS
 {% endblock %}
 
 {% block content %}
 
-<div class="container mt-5">
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+            {{ message }}
 
-        <div>
-
-            <h2 class="mb-1">
-                Applications
-            </h2>
-
-            <p class="text-muted">
-                Job:
-                <strong>{{ job.title }}</strong>
-            </p>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+            </button>
 
         </div>
+    {% endfor %}
+{% endif %}
 
-        <a
-            href="{% url 'job-list' %}"
-            class="btn btn-secondary">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-            ← Back to My Jobs
+    <div>
 
-        </a>
+        <h2 class="fw-bold mb-1">
+            Applicants
+        </h2>
+
+        <p class="text-muted mb-0">
+
+            Job :
+            <strong>{{ job.title }}</strong>
+
+        </p>
 
     </div>
 
-    {% if messages %}
+    <a
+        href="{% url 'job-list' %}"
+        class="btn btn-outline-secondary">
 
-        {% for message in messages %}
+        ← Back to Jobs
 
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-
-        {% endfor %}
-
-    {% endif %}
-
-    {% if applications %}
-
-    <div class="card shadow">
-
-        <div class="table-responsive">
-
-            <table class="table table-hover align-middle mb-0">
-
-                <thead class="table-dark">
-
-                    <tr>
-
-                        <th>Candidate</th>
-                        <th>Status</th>
-                        <th>AI Match</th>
-                        <th>Applied On</th>
-                        <th class="text-center">
-                            Actions
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                {% for application in applications %}
-
-                    <tr>
-
-                        <td>
-
-                            <strong>
-
-                                {{ application.candidate.get_full_name|default:application.candidate.username }}
-
-                            </strong>
-
-                            <br>
-
-                            <small class="text-muted">
-
-                                {{ application.candidate.email }}
-
-                            </small>
-
-                        </td>
-
-                        <td>
-
-                            {% if application.status == "Applied" %}
-
-                                <span class="badge bg-secondary">
-
-                            {% elif application.status == "Screening" %}
-
-                                <span class="badge bg-warning text-dark">
-
-                            {% elif application.status == "Interview" %}
-
-                                <span class="badge bg-primary">
-
-                            {% elif application.status == "Offer" %}
-
-                                <span class="badge bg-success">
-
-                            {% else %}
-
-                                <span class="badge bg-danger">
-
-                            {% endif %}
-
-                                {{ application.status }}
-
-                            </span>
-
-                        </td>
-
-                        <td>
-
-                            {% if application.match_score >= 80 %}
-
-                                <span class="badge bg-success">
-
-                            {% elif application.match_score >= 60 %}
-
-                                <span class="badge bg-primary">
-
-                            {% elif application.match_score >= 40 %}
-
-                                <span class="badge bg-warning text-dark">
-
-                            {% else %}
-
-                                <span class="badge bg-danger">
-
-                            {% endif %}
-
-                                {{ application.match_score }}%
-
-                            </span>
-
-                        </td>
-
-                        <td>
-
-                            {{ application.applied_at|date:"d M Y H:i" }}
-
-                        </td>
-
-                        <td class="text-center">
-
-                            <div class="d-flex flex-wrap justify-content-center gap-2">
-
-                                {% if application.resume %}
-
-                                    <a
-                                        href="{% url 'view-resume' application.id %}"
-                                        target="_blank"
-                                        class="btn btn-sm btn-outline-dark">
-
-                                        📄 Resume
-
-                                    </a>
-
-                                    <a
-                                        href="{% url 'download-resume' application.id %}"
-                                        class="btn btn-sm btn-outline-secondary">
-
-                                        ⬇ Download
-
-                                    </a>
-                                    <a
-                                        href="{% url 'resume-analysis' application.id %}"
-                                        class="btn btn-sm btn-info text-white">
-
-                                       🤖 AI Analysis 
-
-                                </a>
-
-                                {% endif %}
-
-                                {% if application.status == "Applied" %}
-
-                                    <a
-                                        href="{% url 'shortlist-candidate' application.id %}"
-                                        class="btn btn-sm btn-success">
-
-                                        ⭐ Shortlist
-
-                                    </a>
-
-                                {% endif %}
-
-                                {% if application.status != "Rejected" %}
-
-                                    <a
-                                        href="{% url 'reject-candidate' application.id %}"
-                                        class="btn btn-sm btn-danger">
-
-                                        Reject
-
-                                    </a>
-
-                                {% endif %}
-
-                                <a
-                                    href="{% url 'schedule-interview' application.id %}"
-                                    class="btn btn-sm btn-primary">
-
-                                    Interview
-
-                                </a>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-    {% else %}
-
-        <div class="alert alert-info text-center">
-
-            <h4>
-
-                No Applications Yet
-
-            </h4>
-
-            <p>
-
-                Candidates haven't applied for this job yet.
-
-            </p>
-
-        </div>
-
-    {% endif %}
+    </a>
 
 </div>
+
+<!-- Dashboard Cards -->
+
+<div class="row mb-4">
+
+    <div class="col-md-3">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+
+                    Total Applicants
+
+                </h6>
+
+                <h2 class="fw-bold">
+
+                    {{ applications|length }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+
+                    Interview
+
+                </h6>
+
+                <h2 class="text-primary">
+
+                    {{ interview_count }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+
+                    Rejected
+
+                </h6>
+
+                <h2 class="text-danger">
+
+                    {{ rejected_count }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+
+                    Offers
+
+                </h6>
+
+                <h2 class="text-success">
+
+                    {{ offer_count }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% if applications %}
+
+<div class="card shadow border-0">
+
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle mb-0">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>Candidate</th>
+                    <th>Status</th>
+                    <th>AI Match</th>
+                    <th>Applied On</th>
+                    <th class="text-center">Actions</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for application in applications %}
+
+            <tr>
+
+                <td>
+
+                    <strong>
+
+                        {{ application.candidate.get_full_name|default:application.candidate.username }}
+
+                    </strong>
+
+                    <br>
+
+                    <small class="text-muted">
+
+                        {{ application.candidate.email }}
+
+                    </small>
+
+                </td>
+
+                <td>
+
+                    {% if application.status == "Applied" %}
+
+                        <span class="badge bg-secondary">
+                            Applied
+                        </span>
+
+                    {% elif application.status == "Screening" %}
+
+                        <span class="badge bg-warning text-dark">
+                            Screening
+                        </span>
+
+                    {% elif application.status == "Interview" %}
+
+                        <span class="badge bg-primary">
+                            Interview
+                        </span>
+
+                    {% elif application.status == "Offer" %}
+
+                        <span class="badge bg-success">
+                            Offer
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-danger">
+                            Rejected
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    {% if application.match_score >= 80 %}
+
+                        <span class="badge bg-success">
+
+                    {% elif application.match_score >= 60 %}
+
+                        <span class="badge bg-primary">
+
+                    {% elif application.match_score >= 40 %}
+
+                        <span class="badge bg-warning text-dark">
+
+                    {% else %}
+
+                        <span class="badge bg-danger">
+
+                    {% endif %}
+
+                        {{ application.match_score }}%
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    {{ application.applied_at|date:"d M Y H:i" }}
+
+                </td>
+
+                <td>
+
+                    <div class="btn-group">
+
+                        <a
+                            href="{% url 'update-application-status' application.id %}"
+                            class="btn btn-sm btn-outline-primary">
+
+                            Update
+
+                        </a>
+
+                        {% if application.status == "Applied" %}
+
+                        <a
+                            href="{% url 'shortlist-candidate' application.id %}"
+                            class="btn btn-sm btn-outline-success">
+
+                            Shortlist
+
+                        </a>
+
+                        {% endif %}
+
+                        {% if application.status == "Screening" or application.status == "Interview" or application.status == "Offer" %}
+
+                        <a
+                            href="{% url 'generate-interview-questions' application.id %}"
+                            class="btn btn-sm btn-outline-info">
+
+                            AI Questions
+
+                        </a>
+
+                        {% endif %}
+
+                        {% if application.status != "Rejected" %}
+
+                        <a
+                            href="{% url 'reject-candidate' application.id %}"
+                            class="btn btn-sm btn-outline-danger">
+
+                            Reject
+
+                        </a>
+
+                        {% endif %}
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% else %}
+
+<div class="card shadow border-0">
+
+    <div class="card-body text-center py-5">
+
+        <h3>
+
+            No Applications Yet
+
+        </h3>
+
+        <p class="text-muted">
+
+            Candidates haven't applied for this job yet.
+
+        </p>
+
+    </div>
+
+</div>
+
+{% endif %}
 
 {% endblock %}

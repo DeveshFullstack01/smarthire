@@ -1,0 +1,512 @@
+{% extends "base.html" %}
+
+{% block title %}
+Manage Jobs | SmartHire ATS
+{% endblock %}
+
+{% block content %}
+
+<!-- ========================================================= -->
+<!-- Header -->
+<!-- ========================================================= -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold mb-1">
+            Manage Jobs
+        </h2>
+
+        <p class="text-muted mb-0">
+            View and manage all jobs across SmartHire ATS.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- Statistics -->
+<!-- ========================================================= -->
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-6">
+
+        <div class="card shadow-sm border-primary h-100">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Total Jobs
+                </h6>
+
+                <h2 class="text-primary mb-0">
+                    {{ total_jobs }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6">
+
+        <div class="card shadow-sm border-success h-100">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Published Jobs
+                </h6>
+
+                <h2 class="text-success mb-0">
+                    {{ published_jobs }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- Search / Filters -->
+<!-- ========================================================= -->
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-body">
+
+        <form method="GET">
+
+            <div class="row g-3">
+
+                <!-- Search -->
+
+                <div class="col-lg-4">
+
+                    <label class="form-label fw-semibold">
+                        Search
+                    </label>
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        placeholder="Job title, description or company"
+                        value="{{ search }}"
+                    >
+
+                </div>
+
+
+                <!-- Status -->
+
+                <div class="col-lg-3">
+
+                    <label class="form-label fw-semibold">
+                        Status
+                    </label>
+
+                    <select
+                        name="status"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            All Statuses
+                        </option>
+
+                        {% for value, label in status_choices %}
+
+                            <option
+                                value="{{ value }}"
+                                {% if status == value %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ label }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- Location -->
+
+                <div class="col-lg-3">
+
+                    <label class="form-label fw-semibold">
+                        Location
+                    </label>
+
+                    <input
+                        type="text"
+                        name="location"
+                        class="form-control"
+                        placeholder="Location"
+                        value="{{ location }}"
+                    >
+
+                </div>
+
+
+                <!-- Button -->
+
+                <div class="col-lg-2 d-flex align-items-end">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100"
+                    >
+
+                        <i class="bi bi-search me-1"></i>
+
+                        Search
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- Jobs Table -->
+<!-- ========================================================= -->
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-header bg-dark text-white">
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <h5 class="mb-0">
+                All Jobs
+            </h5>
+
+            <span class="badge bg-light text-dark">
+
+                {{ page_obj.paginator.count }}
+
+                Records
+
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle mb-0">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>
+                        Job
+                    </th>
+
+                    <th>
+                        Company
+                    </th>
+
+                    <th>
+                        Location
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Created
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for job in jobs %}
+
+                <tr>
+
+                    <!-- Job -->
+
+                    <td>
+
+                        <strong>
+                            {{ job.title }}
+                        </strong>
+
+                        {% if job.description %}
+
+                            <br>
+
+                            <small class="text-muted">
+
+                                {{ job.description|truncatechars:70 }}
+
+                            </small>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- Company -->
+
+                    <td>
+
+                        {{ job.company.name }}
+
+                    </td>
+
+
+                    <!-- Location -->
+
+                    <td>
+
+                        {{ job.location }}
+
+                    </td>
+
+
+                    <!-- Status -->
+
+                    <td>
+
+                        {% if job.status == "Published" %}
+
+                            <span class="badge bg-success">
+                                Published
+                            </span>
+
+                        {% elif job.status == "Draft" %}
+
+                            <span class="badge bg-secondary">
+                                Draft
+                            </span>
+
+                        {% elif job.status == "Closed" %}
+
+                            <span class="badge bg-danger">
+                                Closed
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-warning text-dark">
+                                {{ job.get_status_display }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- Created -->
+
+                    <td>
+
+                        {{ job.created_at|date:"d M Y" }}
+
+                    </td>
+
+
+                    <!-- Actions -->
+
+                    <td>
+
+                        <div class="d-flex gap-2">
+
+                            <!-- View  -->
+
+                            <a
+                                href="{% url 'admin-job-detail' job.id %}"
+                                class="btn btn-sm btn-outline-primary"
+                            >
+
+                                <i class="bi bi-eye me-1"></i>
+
+                                View
+
+                            </a>
+
+
+                            <!-- Edit -->
+
+
+                            <a
+                                href="{% url 'admin- edit-job' job.id %}"
+                                class="btn btn-sm btn-outline-warning"
+                            >
+
+                                <i class="bi bi-pencil me-1"></i>
+
+                                Edit
+
+                            </a>
+
+                            <!-- Applicants -->
+
+
+                            <a
+                                href="{% url 'admin-applications' %}?job={{ job.id }}"
+                                class="btn btn-sm btn-outline-info"
+                            >
+
+                                <i class="bi bi-people me-1"></i>
+
+                                Applicants
+
+                            </a>
+
+                            <!-- Delete -->
+
+
+                            <a
+                                href="{% url 'admin-delete-job' job.id %}"
+                                class="btn btn-sm btn-outline-danger"
+                            >
+
+                                <i class="bi bi-trash me-1"></i>
+
+                                Delete
+
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="text-center py-5"
+                    >
+
+                        <i
+                            class="bi bi-briefcase"
+                            style="font-size: 3rem;"
+                        ></i>
+
+                        <h5 class="mt-3">
+                            No Jobs Found
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            There are no jobs matching your search.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- Pagination -->
+    <!-- ===================================================== -->
+
+    {% if page_obj.has_other_pages %}
+
+    <div class="card-footer">
+
+        <nav>
+
+            <ul class="pagination justify-content-center mb-0">
+
+                {% if page_obj.has_previous %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ status }}&location={{ location }}"
+                        >
+                            Previous
+                        </a>
+
+                    </li>
+
+                {% endif %}
+
+
+                <li class="page-item active">
+
+                    <span class="page-link">
+
+                        {{ page_obj.number }}
+
+                    </span>
+
+                </li>
+
+
+                {% if page_obj.has_next %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ status }}&location={{ location }}"
+                        >
+                            Next
+                        </a>
+
+                    </li>
+
+                {% endif %}
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

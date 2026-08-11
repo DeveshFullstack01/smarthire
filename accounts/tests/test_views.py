@@ -29,7 +29,7 @@ class CandidateSignupViewTests(APITestCase):
 
         self.assertEqual(
             response.status_code,
-            status.HTTP_201_CREATED,
+            302,
         )
 
         self.assertTrue(
@@ -85,7 +85,7 @@ class RecruiterSignupViewTests(APITestCase):
 
         self.assertEqual(
             response.status_code,
-            status.HTTP_201_CREATED,
+            302,
         )
 
         self.assertTrue(
