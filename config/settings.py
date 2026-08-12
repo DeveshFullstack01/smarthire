@@ -353,11 +353,24 @@ EMAIL_USE_TLS = config(
     cast=bool,
 )
 
-EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER or "noreply@smarthire.com"
+
+# Fail fast instead of hanging if the SMTP host is unreachable
+# (e.g. outbound SMTP blocked on Render free tier).
+EMAIL_TIMEOUT = config("EMAIL_TIMEOUT", default=10, cast=int)
+
+# Master switch for verification email. Off by default so signup can
+# never hang/crash on hosts that block SMTP. Turn on only once a real
+# email provider (SendGrid/Resend/etc.) is configured.
+SEND_VERIFICATION_EMAIL = config(
+    "SEND_VERIFICATION_EMAIL",
+    default=False,
+    cast=bool,
+)
 
 
 # ============================================================
@@ -365,7 +378,10 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # ============================================================
 
 # Used for verification links and notification links.
-FRONTEND_URL = config("FRONTEND_URL")
+FRONTEND_URL = config(
+    "FRONTEND_URL",
+    default="https://smarthire-cndr.onrender.com",
+)
 
 
 # ============================================================

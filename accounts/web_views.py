@@ -53,9 +53,18 @@ def candidate_signup_page(request):
             from .views import send_verification_email
 
             user = serializer.save()
-            
+
+            # DEMO MODE: Render's free tier blocks outbound SMTP, so
+            # verification email can't be delivered. Auto-verify the
+            # account so the user can log in immediately. Remove this
+            # block (and re-enable email) once a real email provider
+            # is configured.
+            user.is_verified = True
+            user.save(update_fields=["is_verified"])
+
             request.session["verification_email"] = user.email
 
+            # Best-effort only: never let email break signup.
             send_verification_email(user)
 
             logger.info(
@@ -101,9 +110,14 @@ def recruiter_signup_page(request):
             from .views import send_verification_email
 
             user = serializer.save()
-            
+
+            # DEMO MODE: auto-verify (see candidate_signup_page note).
+            user.is_verified = True
+            user.save(update_fields=["is_verified"])
+
             request.session["verification_email"] = user.email
 
+            # Best-effort only: never let email break signup.
             send_verification_email(user)
 
             logger.info(

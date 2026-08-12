@@ -43,7 +43,14 @@ class RegistrationSuccessView(TemplateView):
         return context
 
 def send_verification_email(user):
-    """Send an email verification link to the user."""
+    """Send an email verification link to the user.
+
+    Best-effort. On hosts that block outbound SMTP (e.g. Render's free
+    tier) a blocking send would hang until the gunicorn worker is
+    killed, so email is skipped entirely unless SEND_VERIFICATION_EMAIL
+    is explicitly turned on, and even then it uses a short timeout and
+    never raises.
+    """
 
     logger.info(
         "Sending verification email to user_id=%s",
@@ -70,6 +77,16 @@ def send_verification_email(user):
     print(verify_url)
     print("=" * 80 + "\n")
 
+    # Skip email entirely unless explicitly enabled. Default False so a
+    # blocked/hanging SMTP connection can never take down signup.
+    if not getattr(settings, "SEND_VERIFICATION_EMAIL", False):
+        logger.info(
+            "Verification email skipped (SEND_VERIFICATION_EMAIL is off). "
+            "user_id=%s",
+            user.id,
+        )
+        return False
+
     try:
         send_mail(
             subject="Verify your SmartHire account",
@@ -80,7 +97,7 @@ def send_verification_email(user):
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
-            fail_silently=False,
+            fail_silently=True,
         )
 
         logger.info(
@@ -91,14 +108,8 @@ def send_verification_email(user):
         return True
 
     except Exception:
-        # Don't let a broken/misconfigured email backend take down
-        # signup. The account is already created at this point (see
-        # callers below) - we log the failure so it's visible in Render
-        # logs, but we let the request finish successfully. The user can
-        # use "Resend verification email" once SMTP is fixed.
         logger.exception(
-            "Failed to send verification email to user_id=%s. "
-            "Check EMAIL_HOST_USER / EMAIL_HOST_PASSWORD / FRONTEND_URL.",
+            "Failed to send verification email to user_id=%s.",
             user.id,
         )
 
@@ -123,6 +134,10 @@ class CandidateSignupView(generics.CreateAPIView):
             "Candidate account created. user_id=%s",
             user.id,
         )
+
+        # DEMO MODE: auto-verify so the user can log in without email.
+        user.is_verified = True
+        user.save(update_fields=["is_verified"])
 
         email_sent = send_verification_email(user)
 
@@ -150,6 +165,10 @@ class RecruiterSignupView(generics.CreateAPIView):
             "Recruiter account created. user_id=%s",
             user.id,
         )
+
+        # DEMO MODE: auto-verify so the user can log in without email.
+        user.is_verified = True
+        user.save(update_fields=["is_verified"])
 
         email_sent = send_verification_email(user)
 
