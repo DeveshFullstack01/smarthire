@@ -141,7 +141,6 @@ class CandidateSignupView(generics.CreateAPIView):
 
         email_sent = send_verification_email(user)
 
-        request.session["verification_email"] = user.email
         request.session["verification_email_sent"] = email_sent
 
         return redirect(reverse("registration-success"))
@@ -172,7 +171,6 @@ class RecruiterSignupView(generics.CreateAPIView):
 
         email_sent = send_verification_email(user)
 
-        request.session["verification_email"] = user.email
         request.session["verification_email_sent"] = email_sent
 
         return redirect(reverse("registration-success"))

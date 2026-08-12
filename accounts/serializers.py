@@ -63,7 +63,6 @@ class CandidateSignupSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             "username",
-            "email",
             "password",
         )
 
@@ -84,7 +83,6 @@ class CandidateSignupSerializer(serializers.ModelSerializer):
 
         user = User.objects.create_user(
             username=validated_data["username"],
-            email=validated_data["email"],
             password=validated_data["password"],
             role=User.Role.CANDIDATE,
         )
@@ -112,7 +110,6 @@ class RecruiterSignupSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             "username",
-            "email",
             "password",
             "company_name",
         )
@@ -125,7 +122,6 @@ class RecruiterSignupSerializer(serializers.ModelSerializer):
         with transaction.atomic():
             user = User.objects.create_user(
                 username=validated_data["username"],
-                email=validated_data["email"],
                 password=validated_data["password"],
                 role=User.Role.RECRUITER,
             )

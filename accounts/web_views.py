@@ -43,7 +43,6 @@ def candidate_signup_page(request):
         serializer = CandidateSignupSerializer(
             data={
                 "username": request.POST.get("username"),
-                "email": request.POST.get("email"),
                 "password": request.POST.get("password"),
             }
         )
@@ -61,8 +60,6 @@ def candidate_signup_page(request):
             # is configured.
             user.is_verified = True
             user.save(update_fields=["is_verified"])
-
-            request.session["verification_email"] = user.email
 
             # Best-effort only: never let email break signup.
             send_verification_email(user)
@@ -99,7 +96,6 @@ def recruiter_signup_page(request):
         serializer = RecruiterSignupSerializer(
             data={
                 "username": request.POST.get("username"),
-                "email": request.POST.get("email"),
                 "password": request.POST.get("password"),
                 "company_name": request.POST.get("company_name"),
             }
@@ -114,8 +110,6 @@ def recruiter_signup_page(request):
             # DEMO MODE: auto-verify (see candidate_signup_page note).
             user.is_verified = True
             user.save(update_fields=["is_verified"])
-
-            request.session["verification_email"] = user.email
 
             # Best-effort only: never let email break signup.
             send_verification_email(user)
