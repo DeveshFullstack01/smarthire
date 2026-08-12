@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Interviews | SmartHire ATS
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <!-- ================================================= -->
+    <!-- Page Header -->
+    <!-- ================================================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">My Interviews</h2>
+            <p class="text-muted mb-0">Interviews scheduled for your applications.</p>
+        </div>
+    </div>
+
+    {% if interviews %}
+
+    <!-- ================================================= -->
+    <!-- Interview Table -->
+    <!-- ================================================= -->
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Scheduled Interviews</h5>
+                <span class="badge bg-light text-dark">
+                    {{ interviews|length }} Interviews
+                </span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Job</th>
+                        <th>Company</th>
+                        <th>Date</th>
+                        <th>Round</th>
+                        <th>Type</th>
+                        <th>Interviewer</th>
+                        <th>Your Response</th>
+                        <th>Status</th>
+                        <th>Meeting</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for interview in interviews %}
+
+                    <tr>
+
+                        <!-- Job -->
+                        <td>{{ interview.application.job.title }}</td>
+
+                        <!-- Company -->
+                        <td>{{ interview.application.job.company.name }}</td>
+
+                        <!-- Date -->
+                        <td>
+                            {{ interview.scheduled_at|date:"d M Y" }}
+                            <br>
+                            <small class="text-muted">
+                                {{ interview.scheduled_at|date:"h:i A" }}
+                            </small>
+                        </td>
+
+                        <!-- Round -->
+                        <td>
+                            <span class="badge bg-dark">
+                                {{ interview.get_interview_round_display }}
+                            </span>
+                        </td>
+
+                        <!-- Interview Type -->
+                        <td>
+                            {% if interview.interview_type == "Online" %}
+                                <span class="badge bg-primary">🌐 Online</span>
+                            {% elif interview.interview_type == "Offline" %}
+                                <span class="badge bg-secondary">🏢 Offline</span>
+                            {% else %}
+                                <span class="badge bg-info text-dark">📞 Phone</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Interviewer -->
+                        <td>{{ interview.interviewer_name }}</td>
+
+                        <!-- Candidate Response -->
+                        <td>
+                            {% if interview.candidate_response == "Accepted" %}
+                                <span class="badge bg-success">Accepted</span>
+                            {% elif interview.candidate_response == "Declined" %}
+                                <span class="badge bg-danger">Declined</span>
+                            {% elif interview.candidate_response == "Reschedule" %}
+                                <span class="badge bg-warning text-dark">Reschedule</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Pending</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Interview Status -->
+                        <td>
+                            {% if interview.status == "Scheduled" %}
+                                <span class="badge bg-primary">Scheduled</span>
+                            {% elif interview.status == "Completed" %}
+                                <span class="badge bg-success">Completed</span>
+                            {% elif interview.status == "Cancelled" %}
+                                <span class="badge bg-danger">Cancelled</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Rescheduled</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Meeting -->
+                        <td>
+                            {% if interview.meeting_link %}
+                                <a
+                                     href="{{ interview.meeting_link }}"
+                                     target="_blank"
+                                     rel="noopener"
+                                     class="btn btn-outline-primary btn-sm">
+
+                                     Join
+                                </a>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Details -->
+                        <td>
+                            <a
+                                href="{% url 'interview-detail' interview.id %}"
+                                class="btn btn-outline-dark btn-sm">
+                                View
+                            </a>
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="card shadow border-0">
+        <div class="card-body text-center py-5">
+
+            <div class="mb-4">
+                <i class="bi bi-calendar-x" style="font-size:4rem;color:#6c757d;"></i>
+            </div>
+
+            <h3 class="mb-3">No Interviews Scheduled</h3>
+
+            <p class="text-muted mb-4">
+                Interviews scheduled by recruiters for your applications will appear here.
+            </p>
+
+            <a href="{% url 'job-list' %}" class="btn btn-primary">
+                Browse Jobs
+            </a>
+
+        </div>
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
