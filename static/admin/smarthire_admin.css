@@ -1,0 +1,60 @@
+/*
+SmartHire ATS branding override for Django admin.
+
+Overrides Django admin's CSS custom properties instead of fighting its
+selectors, so upgrades to Django's own admin CSS keep working. See
+env/Lib/site-packages/django/contrib/admin/static/admin/css/base.css
+for the full variable list this is layered on top of.
+*/
+
+:root {
+    --primary: #2563eb;
+    --secondary: #1d4ed8;
+    --primary-fg: #fff;
+
+    --header-color: #fff;
+    --header-bg: #2563eb;
+    --header-link-color: #fff;
+
+    --breadcrumbs-fg: #dbeafe;
+    --breadcrumbs-bg: #1e40af;
+
+    --link-fg: #2563eb;
+    --link-hover-color: #1d4ed8;
+    --link-selected-fg: #2563eb;
+
+    --button-bg: #2563eb;
+    --button-hover-bg: #1d4ed8;
+    --default-button-bg: #1d4ed8;
+    --default-button-hover-bg: #1e40af;
+}
+
+/* Keep the brand blue (instead of Django's dark teal) when the admin's
+   own dark-mode toggle or OS preference switches to dark. */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary: #3b82f6;
+        --header-bg: #1e3a8a;
+        --breadcrumbs-bg: #1e3a8a;
+        --link-fg: #60a5fa;
+        --link-hover-color: #93c5fd;
+        --link-selected-fg: #60a5fa;
+        --button-bg: #2563eb;
+        --button-hover-bg: #3b82f6;
+        --default-button-bg: #2563eb;
+        --default-button-hover-bg: #3b82f6;
+    }
+}
+
+html[data-theme="dark"] {
+    --primary: #3b82f6;
+    --header-bg: #1e3a8a;
+    --breadcrumbs-bg: #1e3a8a;
+    --link-fg: #60a5fa;
+    --link-hover-color: #93c5fd;
+    --link-selected-fg: #60a5fa;
+    --button-bg: #2563eb;
+    --button-hover-bg: #3b82f6;
+    --default-button-bg: #2563eb;
+    --default-button-hover-bg: #3b82f6;
+}
