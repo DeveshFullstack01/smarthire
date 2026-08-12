@@ -70,21 +70,39 @@ def send_verification_email(user):
     print(verify_url)
     print("=" * 80 + "\n")
 
-    send_mail(
-        subject="Verify your SmartHire account",
-        message=(
-            f"Hi {user.username},\n\n"
-            f"Click the link below to verify your account:\n\n"
-            f"{verify_url}"
-        ),
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[user.email],
-    )
+    try:
+        send_mail(
+            subject="Verify your SmartHire account",
+            message=(
+                f"Hi {user.username},\n\n"
+                f"Click the link below to verify your account:\n\n"
+                f"{verify_url}"
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
 
-    logger.info(
-        "Verification email sent to user_id=%s",
-        user.id,
-    )
+        logger.info(
+            "Verification email sent to user_id=%s",
+            user.id,
+        )
+
+        return True
+
+    except Exception:
+        # Don't let a broken/misconfigured email backend take down
+        # signup. The account is already created at this point (see
+        # callers below) - we log the failure so it's visible in Render
+        # logs, but we let the request finish successfully. The user can
+        # use "Resend verification email" once SMTP is fixed.
+        logger.exception(
+            "Failed to send verification email to user_id=%s. "
+            "Check EMAIL_HOST_USER / EMAIL_HOST_PASSWORD / FRONTEND_URL.",
+            user.id,
+        )
+
+        return False
 
 
 class CandidateSignupView(generics.CreateAPIView):
@@ -106,7 +124,10 @@ class CandidateSignupView(generics.CreateAPIView):
             user.id,
         )
 
-        send_verification_email(user)
+        email_sent = send_verification_email(user)
+
+        request.session["verification_email"] = user.email
+        request.session["verification_email_sent"] = email_sent
 
         return redirect(reverse("registration-success"))
 
@@ -130,7 +151,10 @@ class RecruiterSignupView(generics.CreateAPIView):
             user.id,
         )
 
-        send_verification_email(user)
+        email_sent = send_verification_email(user)
+
+        request.session["verification_email"] = user.email
+        request.session["verification_email_sent"] = email_sent
 
         return redirect(reverse("registration-success"))
 
@@ -241,7 +265,18 @@ class ResendVerificationView(APIView):
             user.id,
         )
 
-        send_verification_email(user)
+        email_sent = send_verification_email(user)
+
+        if not email_sent:
+            return Response(
+                {
+                    "detail": (
+                        "We couldn't send the email right now. "
+                        "Please try again shortly."
+                    )
+                },
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
 
         return Response(
             {"message": "Verification email sent successfully."},

@@ -17,7 +17,9 @@ services:
         generateValue: true
       - key: DEBUG
         value: "False"
-      - key: SECURE_SSL
+      # Renamed from SECURE_SSL -> SECURE_SSL_REDIRECT to match
+      # what config/settings.py actually reads.
+      - key: SECURE_SSL_REDIRECT
         value: "True"
       - key: ALLOWED_HOSTS
         value: ".onrender.com"
@@ -45,3 +47,38 @@ services:
         fromDatabase:
           name: smarthire-db
           property: port
+
+      # ------------------------------------------------------------
+      # Required by config/settings.py, previously missing here.
+      # This is exactly why signup was failing: settings.py has no
+      # fallback default for these, and send_verification_email() had
+      # no error handling, so a missing/misconfigured email backend
+      # crashed the whole signup request.
+      # ------------------------------------------------------------
+
+      # Used to build the verification link candidates/recruiters click.
+      # Must be your real live URL, not 127.0.0.1.
+      - key: FRONTEND_URL
+        value: "https://smarthire-cndr.onrender.com"
+
+      - key: EMAIL_BACKEND
+        value: "django.core.mail.backends.smtp.EmailBackend"
+
+      - key: EMAIL_HOST
+        value: "smtp.gmail.com"
+
+      - key: EMAIL_PORT
+        value: "587"
+
+      - key: EMAIL_USE_TLS
+        value: "True"
+
+      # sync: false means Render will NOT read a value from this file.
+      # It just reserves the variable and makes you type the real
+      # value once in the Render dashboard (Environment tab), so your
+      # Gmail address/app-password never end up committed to git.
+      - key: EMAIL_HOST_USER
+        sync: false
+
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
