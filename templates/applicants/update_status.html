@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}
+Update Application Status | SmartHire ATS
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="fw-bold mb-1">Update Application Status</h2>
+        <p class="text-muted mb-0">
+            {{ application.candidate.get_full_name|default:application.candidate.username }}
+            &rarr;
+            {{ application.job.title }}
+        </p>
+    </div>
+
+    <a
+        href="{% url 'job-applicants' application.job.id %}"
+        class="btn btn-outline-secondary">
+        ← Back to Applicants
+    </a>
+
+</div>
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-body">
+
+        <div class="row g-4">
+
+            <div class="col-md-6">
+                <h6 class="text-muted mb-1">Candidate</h6>
+                <p class="mb-0">
+                    {{ application.candidate.get_full_name|default:application.candidate.username }}
+                </p>
+                <small class="text-muted">{{ application.candidate.email }}</small>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="text-muted mb-1">Job</h6>
+                <p class="mb-0">{{ application.job.title }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="text-muted mb-1">Applied On</h6>
+                <p class="mb-0">{{ application.applied_at|date:"d M Y H:i" }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="text-muted mb-1">AI Match</h6>
+                <p class="mb-0">{{ application.match_score }}%</p>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="text-muted mb-1">Current Status</h6>
+                <p class="mb-0">
+                    {% if application.status == "Applied" %}
+                        <span class="badge bg-secondary">Applied</span>
+                    {% elif application.status == "Screening" %}
+                        <span class="badge bg-warning text-dark">Screening</span>
+                    {% elif application.status == "Interview" %}
+                        <span class="badge bg-primary">Interview</span>
+                    {% elif application.status == "Offer" %}
+                        <span class="badge bg-success">Offer</span>
+                    {% else %}
+                        <span class="badge bg-danger">Rejected</span>
+                    {% endif %}
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card shadow border-0">
+
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Move to Next Status</h5>
+    </div>
+
+    <div class="card-body">
+
+        {% if status_choices %}
+
+        <form method="post" action="{% url 'update-application-status' application.id %}">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">New Status</label>
+                <select name="status" class="form-select" required>
+                    <option value="" selected disabled>Choose a status</option>
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Update Status
+            </button>
+
+        </form>
+
+        {% else %}
+
+        <p class="text-muted mb-0">
+            No further status changes are available for this application.
+        </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
