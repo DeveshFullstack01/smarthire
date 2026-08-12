@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}
+Interview Details | SmartHire ATS
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Interview Details</h2>
+            <p class="text-muted mb-0">
+                {{ interview.application.job.title }}
+                at
+                {{ interview.application.job.company.name }}
+            </p>
+        </div>
+        <a href="{% url 'candidate-interviews' %}" class="btn btn-outline-secondary">
+            Back to My Interviews
+        </a>
+    </div>
+
+    <div class="card shadow border-0 mb-4">
+
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    {{ interview.get_interview_round_display }}
+                </h5>
+                {% if interview.status == "Scheduled" %}
+                    <span class="badge bg-light text-primary">Scheduled</span>
+                {% elif interview.status == "Completed" %}
+                    <span class="badge bg-success">Completed</span>
+                {% elif interview.status == "Cancelled" %}
+                    <span class="badge bg-danger">Cancelled</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">Rescheduled</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-1">Job</h6>
+                    <p class="mb-0">{{ interview.application.job.title }}</p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-1">Company</h6>
+                    <p class="mb-0">{{ interview.application.job.company.name }}</p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-1">Date &amp; Time</h6>
+                    <p class="mb-0">
+                        {{ interview.scheduled_at|date:"d M Y, h:i A" }}
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-1">Duration</h6>
+                    <p class="mb-0">{{ interview.duration_minutes }} minutes</p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-1">Type</h6>
+                    <p class="mb-0">
+                        {% if interview.interview_type == "Online" %}
+                            <span class="badge bg-primary">🌐 Online</span>
+                        {% elif interview.interview_type == "Offline" %}
+                            <span class="badge bg-secondary">🏢 Offline</span>
+                        {% else %}
+                            <span class="badge bg-info text-dark">📞 Phone</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-1">Interviewer</h6>
+                    <p class="mb-0">{{ interview.interviewer_name }}</p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-1">Meeting Link</h6>
+                    <p class="mb-0">
+                        {% if interview.meeting_link %}
+                            <a
+                                href="{{ interview.meeting_link }}"
+                                target="_blank"
+                                rel="noopener"
+                                class="btn btn-outline-primary btn-sm">
+                                Join Meeting
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-1">Your Response</h6>
+                    <p class="mb-0">
+                        {% if interview.candidate_response == "Accepted" %}
+                            <span class="badge bg-success">Accepted</span>
+                        {% elif interview.candidate_response == "Declined" %}
+                            <span class="badge bg-danger">Declined</span>
+                        {% elif interview.candidate_response == "Reschedule" %}
+                            <span class="badge bg-warning text-dark">Reschedule Requested</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Pending</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if interview.candidate_note %}
+                <div class="col-12">
+                    <h6 class="text-muted mb-1">Your Note</h6>
+                    <p class="mb-0">{{ interview.candidate_note }}</p>
+                </div>
+                {% endif %}
+
+                {% if interview.notes %}
+                <div class="col-12">
+                    <h6 class="text-muted mb-1">Notes from Recruiter</h6>
+                    <p class="mb-0">{{ interview.notes }}</p>
+                </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% if can_respond %}
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Respond to this Interview</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post" action="{% url 'interview-respond' interview.id %}">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Your Response</label>
+                    <select name="response" class="form-select" required>
+                        <option value="" selected disabled>Choose an option</option>
+                        <option value="Accepted">Accept</option>
+                        <option value="Declined">Decline</option>
+                        <option value="Reschedule">Request Reschedule</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Note (optional)</label>
+                    <textarea
+                        name="note"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Add a reason or reschedule preference, if any."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Submit Response
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
